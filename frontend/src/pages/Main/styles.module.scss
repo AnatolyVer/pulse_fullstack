@@ -1,0 +1,19 @@
+.Content {
+  display: flex;
+  height: 92%;
+  width: 100%;
+  align-self: end;
+  div {
+    &:nth-child(1),
+    &:nth-child(3) {
+      background: red;
+      width: 25%;
+      height: 100%;
+    }
+
+    &:nth-child(2) {
+      width: 50%;
+      height: 100%;
+    }
+  }
+}

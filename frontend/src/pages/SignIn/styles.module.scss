@@ -1,0 +1,26 @@
+.FormWrapper{
+  width: 20%;
+  height: 50%;
+  box-sizing: border-box;
+  padding: 20px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  h4{
+    cursor: pointer;
+    color: white;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom 0.25s;
+    &:hover{
+      border-bottom: 1px solid white;
+    }
+  }
+}
