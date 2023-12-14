@@ -17,8 +17,8 @@ export default class UserService {
                 const {accessToken, refreshToken} = await TokenService.generateTokens(user)
                 user.sessions.push({accessToken, refreshToken})
                 await user.save()
-                res.setHeader('accessToken', accessToken);
-                res.setHeader('refreshToken', refreshToken);
+                res.setHeader('access-token', accessToken);
+                res.setHeader('refresh-token', refreshToken);
                 res.status(200).json(user._id)
             }
             else {

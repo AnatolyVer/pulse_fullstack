@@ -5,39 +5,22 @@ import SignIn from "./pages/SignIn/SignIn";
 import SignUp from "./pages/SignIn/SignUp";
 import {useEffect, useState} from "react";
 import {useDispatch} from "react-redux";
-import axios from "axios";
 import Loader from "./components/Loader";
-import {setCurrentUser} from "./redux/userSlice";
-import Cookies from "js-cookie";
+import {getUser} from "./api/getUser";
+import {protectedAxiosRequest} from "./api/protectedAxiosRequest";
 function App() {
 
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
     const dispatch = useDispatch();
 
     useEffect( () => {
-
-        const load = async () => {
-            const id = localStorage.getItem("id")
-            if (id !== null) {
-                try {
-                    const {data} = await axios.get(`${import.meta.env.VITE_RESTAPI_DEV_URL}/user/${id}`, {
-                        headers:{
-                            'access-token':Cookies.get("access-token"),
-                            'refresh-token':Cookies.get("refresh-token"),
-                        }
-                    })
-                    dispatch(setCurrentUser(data))
-                }catch (e: any) {
-                    console.error(e)
-                }
-            }
+        const id = localStorage.getItem("id")
+        if (id !== null) {
+            setIsLoading(true)
+            protectedAxiosRequest(() => getUser(id))
+                .then((res: any) => console.log(res))
+                .finally(() =>  setIsLoading(false))
         }
-
-        load()
-        setIsLoading(false)
-
-
-
     }, []);
 
   return (

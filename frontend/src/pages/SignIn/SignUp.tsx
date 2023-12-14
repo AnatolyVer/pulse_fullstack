@@ -39,6 +39,7 @@ const SignUp = () => {
         event.preventDefault();
         try {
             const res = await axios.post( import.meta.env.VITE_RESTAPI_DEV_URL + '/user/sign_up', formData);
+            console.log(res)
             localStorage.setItem("id", res.data)
             Cookies.set('access-token', res.headers['access-token'])
             Cookies.set('refresh-token', res.headers['refresh-token'])
