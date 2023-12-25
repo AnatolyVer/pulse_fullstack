@@ -1,4 +1,4 @@
-import logo from "../../assets/pulse.png";
+import logo from "@assets/pulse.png";
 
 import styles from "./styles.module.scss"
 

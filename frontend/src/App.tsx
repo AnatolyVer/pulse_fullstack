@@ -1,44 +1,42 @@
-import {BrowserRouter, Route, Routes} from "react-router-dom";
-import Header from './layouts/Header/Header';
-import Main from './pages/Main/Main';
-import SignIn from "./pages/SignIn/SignIn";
-import SignUp from "./pages/SignIn/SignUp";
 import {useEffect, useState} from "react";
 import {useDispatch} from "react-redux";
-import Loader from "./components/Loader";
-import {getUser} from "./api/getUser";
-import {protectedAxiosRequest} from "./api/protectedAxiosRequest";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+
+import {getUser} from "@api/getUser.ts";
+import Loader from "@components/Loader";
+import Header from '@layouts/Header/Header';
+import Main from '@pages/Main/Main';
+import SignInAndUpPage from "@pages/SignIn/SignInAndUpPage.tsx";
+import {setCurrentUser} from "@redux/userSlice";
+import useProtectedAxios from "@shared/hooks/useProtectedAxios.tsx";
 function App() {
 
     const [isLoading, setIsLoading] = useState(false)
     const dispatch = useDispatch();
+    const [protectedAxiosRequest] = useProtectedAxios()
 
     useEffect( () => {
         const id = localStorage.getItem("id")
         if (id !== null) {
             setIsLoading(true)
             protectedAxiosRequest(() => getUser(id))
-                .then((res: any) => console.log(res))
+                .then((res:any) => dispatch(setCurrentUser(res.data)))
                 .finally(() =>  setIsLoading(false))
         }
     }, []);
 
-  return (
-      <>
-          {isLoading ? (
-              <Loader/>
-              ) : (<>
-                  <Header/>
-                  <BrowserRouter>
-                      <Routes>
-                          {<Route path="" element={<Main/>}/>}
-                          <Route path="/sign_in" element={<SignIn/>}/>
-                          <Route path="/sign_up" element={<SignUp/>}/>
-                      </Routes>
-                  </BrowserRouter>
-              </>)
-          }
-      </>
+    return (isLoading ? (
+            <Loader/>
+        ) : (<>
+            <BrowserRouter>
+                <Header/>
+                <Routes>
+                    {<Route path="" element={<Main/>}/>}
+                    <Route path="/sign_in" element={<SignInAndUpPage link={"sign_in"}/>}/>
+                    <Route path="/sign_up" element={<SignInAndUpPage link={"sign_up"}/>}/>
+                </Routes>
+            </BrowserRouter>
+        </>)
   )
 }
 

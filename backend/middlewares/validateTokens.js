@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
-import {log} from "debug";
+import tokenService from "../services/tokenService.js";
 
 export const validateTokens = async (req, res, next) => {
     try {
@@ -8,7 +8,7 @@ export const validateTokens = async (req, res, next) => {
         const refreshToken = req.headers['refresh-token'];
 
         if (accessToken === undefined || refreshToken === undefined) {
-            console.log("No tokens")
+            console.log("no tokens")
             return res.status(401).send("Log in again");
         }
 
@@ -18,42 +18,42 @@ export const validateTokens = async (req, res, next) => {
         catch (accessTokenError) {
             try {
                 jwt.verify(refreshToken, process.env.REFRESH_SECRET_KEY);
+                const {_id}  = jwt.decode(refreshToken)
+                const user = await User.findById(_id);
+                if (user){
+                    const index = user.sessions.findIndex(session => session.accessToken === accessToken && session.refreshToken === refreshToken)
 
-                const user = await User.findOneAndUpdate(
-                    {
-                        sessions: {
-                            $elemMatch: {
-                                accessToken: accessToken,
-                                refreshToken: refreshToken
-                            }
-                        }
-                    }
-                );
+                    const tokens = await tokenService.generateTokens(user)
 
-                console.log(user)
+                    user.sessions.splice(index, 1);
+                    await user.save()
 
-                const {username, nickname} = user
-                const newAccessToken = jwt.sign({username, nickname}, process.env.ACCESS_SECRET_KEY, {expiresIn: '2m'})
+                    user.sessions.push({
+                        accessToken: tokens.accessToken,
+                        refreshToken: tokens.refreshToken
+                    })
 
-                const index = user.sessions.findIndex(session => session.accessToken === accessToken && session.refreshToken === refreshToken)
-                console.log(user.sessions)
-                user.sessions[index].accessToken = newAccessToken
+                    await user.save()
 
-                await user.save()
+                    res.setHeader('refresh-token', tokens.refreshToken);
+                    res.setHeader('access-token', tokens.accessToken);
+                    return res.status(403).send("Repeat the request");
+                }
 
-                req.headers['access-token'] = newAccessToken
+                console.log("no user")
 
-                return res.status(403).send("Repeat the request");
+                return res.status(401).send("Login again");
 
             } catch (refreshTokenError) {
-                console.log(refreshTokenError)
+                console.log("bad rt")
+                console.error(refreshTokenError)
                 return res.status(401).send("Login again");
             }
         }
 
         next();
     } catch (error) {
-        console.log("just error")
+        console.log(error)
         return res.status(401).send("Log in again");
     }
 }

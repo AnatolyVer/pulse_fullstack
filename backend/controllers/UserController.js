@@ -34,8 +34,7 @@ export default class UserController {
 
     static async logOut(req, res) {
         try{
-            const {id} = req.params
-            await userService.logOut(id, res)
+            await userService.logOut(req, res)
         }catch (e) {
             res.status(500).end()
         }

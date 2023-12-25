@@ -2,6 +2,7 @@ import User from '../models/user.js'
 import bcrypt from 'bcrypt'
 import userDto from "../dto/userDto.js";
 import TokenService from "./tokenService.js";
+import jwt from "jsonwebtoken";
 export default class UserService {
     static async createUser(user, res) {
         try{
@@ -13,7 +14,7 @@ export default class UserService {
                     return
                 }
                 const hashedPassword = await bcrypt.hash(password, await bcrypt.genSalt())
-                const user =  await User.create({username, nickname, password: hashedPassword})
+                const user = await User.create({username, nickname, password: hashedPassword})
                 const {accessToken, refreshToken} = await TokenService.generateTokens(user)
                 user.sessions.push({accessToken, refreshToken})
                 await user.save()
@@ -29,14 +30,13 @@ export default class UserService {
         }
     }
 
-    static async logUser(user, res) {
+    static async logUser({username, password}, res) {
         try{
-            const {username, password} = user
             const sameUser = await User.findOne({username})
             if (sameUser){
                 const isPasswordCorrect = await bcrypt.compare(password, sameUser.password)
                 if (isPasswordCorrect){
-                    const {accessToken, refreshToken} = await TokenService.generateTokens(user)
+                    const {accessToken, refreshToken} = await TokenService.generateTokens(sameUser)
                     sameUser.sessions.push({accessToken, refreshToken})
                     await sameUser.save()
                     res.setHeader('access-token', accessToken);
@@ -65,10 +65,20 @@ export default class UserService {
         }
     }
 
-    static async logOut(id, res) {
+    static async logOut(req, res) {
         try{
-            const user = await User.findById(id)
-            res.status(200).json(new userDto(user))
+            const accessToken = req.headers['access-token']
+            const refreshToken = req.headers['refresh-token']
+
+            const {_id} = jwt.decode(refreshToken)
+            const user = await User.findById(_id)
+
+            const index = user.sessions.findIndex(session => session.accessToken === accessToken && session.refreshToken === refreshToken)
+
+            user.sessions.splice(index, 1);
+            await user.save()
+
+            res.status(200).end()
         }catch (e) {
             console.error(e)
             res.status(404).send("User not found")

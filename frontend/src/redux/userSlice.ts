@@ -1,24 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 import IUser from '../shared/interfaces/IUser';
 
-const initialUserState: IUser = {
-    _id: '',
-    nickname: '',
-    username: '',
-    avatar_url: '',
-    bio: '',
-    chats: [],
-};
-
+const initialUserState: IUser | null = null
 
 const userSlice = createSlice({
     name: 'user',
-    initialState: initialUserState,
+    initialState: null,
     reducers: {
-        setCurrentUser: (state, action) => {
+        setCurrentUser: (_state, action) => {
             return action.payload;
         },
-        clearCurrentUser: (state) => {
+        clearCurrentUser: (_state) => {
             return initialUserState;
         },
     },
