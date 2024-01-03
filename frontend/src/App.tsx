@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {useDispatch} from "react-redux";
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 
 import {getUser} from "@api/getUser.ts";
 import Loader from "@components/Loader";
@@ -28,14 +28,12 @@ function App() {
     return (isLoading ? (
             <Loader/>
         ) : (<>
-            <BrowserRouter>
-                <Header/>
-                <Routes>
-                    {<Route path="" element={<Main/>}/>}
-                    <Route path="/sign_in" element={<SignInAndUpPage link={"sign_in"}/>}/>
-                    <Route path="/sign_up" element={<SignInAndUpPage link={"sign_up"}/>}/>
-                </Routes>
-            </BrowserRouter>
+            <Header/>
+            <Routes>
+                {<Route path="" element={<Main/>}/>}
+                <Route path="/sign_in" element={<SignInAndUpPage link={"sign_in"}/>}/>
+                <Route path="/sign_up" element={<SignInAndUpPage link={"sign_up"}/>}/>
+            </Routes>
         </>)
   )
 }

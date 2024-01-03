@@ -11,7 +11,7 @@ userRouter.post('/sign_up', UserController.signUp)
 userRouter.post('/sign_in', UserController.signIn)
 userRouter.post("/logout", UserController.logOut)
 
-userRouter.put('/update', UserController.signUp)
+userRouter.put('/update', validateTokens, UserController.updateUser)
 
 
 export default userRouter

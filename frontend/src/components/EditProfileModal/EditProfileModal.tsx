@@ -1,12 +1,20 @@
 import React, {useState} from 'react';
+import {useDispatch} from "react-redux";
 
+import {updateUser} from "@api/updateUser.ts";
+
+import Input from '@components/Input/Input';
+import Textarea from '@components/Textarea/Textarea';
+import Loader from '@components/Loader';
+import {setCurrentUser} from "@redux/userSlice.ts";
 import IUser from "@shared/interfaces/IUser.ts";
+import useProtectedAxios from "@shared/hooks/useProtectedAxios.tsx";
 
-import styles from './styles.module.scss'
 import {Alert, Avatar, Slide} from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
-import {useDispatch} from "react-redux";
-import {setCurrentUser} from "@redux/userSlice.ts";
+
+import styles from './styles.module.scss'
+
 
 interface EditProfileModalProps {
     isOpen: boolean;
@@ -18,6 +26,9 @@ const EditProfileModal = ({ isOpen, onClose, userData }:EditProfileModalProps) =
 
     const dispatch = useDispatch()
 
+    const [protectedAxiosRequest,] = useProtectedAxios()
+
+    const [isLoading, setIsLoading] = useState(false)
     const [editedData, setEditedData] = useState(userData);
     const [snackbarState, setSnackbarState] = React.useState({
         open:false,
@@ -32,53 +43,54 @@ const EditProfileModal = ({ isOpen, onClose, userData }:EditProfileModalProps) =
         }));
     };
 
+    const handleClose = () => {
+        setEditedData(userData)
+        setSnackbarState({open:false, text:""})
+        onClose()
+    }
+
     const handleSave = () => {
-        dispatch(setCurrentUser(editedData))
-        onClose();
+        setIsLoading(true)
+        protectedAxiosRequest(() => updateUser(editedData))
+            .then(() => {
+                dispatch(setCurrentUser(editedData))
+                handleClose()
+            })
+            .catch((e: Error) => {
+                setSnackbarState({open:true, text:e.message})
+            })
+            .finally(() =>  setIsLoading(false))
     };
 
     return (isOpen && (
-        <div className={styles.Modal}>
-            <div className={styles.Content}>
-                <h2>Edit Profile</h2>
-                <Avatar sx={{ height: '70px', width: '70px' }} src={userData.avatar_url}/>
-                <label>
-                    Username:
-                    <input
-                        type="text"
-                        name="username"
-                        value={editedData.username}
-                        onChange={handleInputChange}
-                    />
-                </label>
-                <label>
-                    Nickname:
-                    <input
-                        type="text"
-                        name="nickname"
-                        value={editedData.nickname}
-                        onChange={handleInputChange}
-                    />
-                </label>
-                <label>
-                    Bio:
-                    <textarea name="bio" value={editedData.bio} onChange={handleInputChange} />
-                </label>
-                <div>
-                    <button onClick={handleSave}>Save</button>
-                    <button onClick={onClose}>Close</button>
+        isLoading ? (
+            <Loader/>
+            ) : (
+            <div className={styles.Modal}>
+                <div className={styles.Content}>
+                    <h2>Edit Profile</h2>
+                    <div className={styles.User}>
+                        <Avatar sx={{ height: '70px', width: '70px' }} src={userData.avatar_url}/>
+                        <Input label={"Username"} value={editedData.username!} type={"text"} onChange={handleInputChange}/>
+                        <Input label={"Nickname"} value={editedData.nickname!} type={"text"} onChange={handleInputChange}/>
+                        <Textarea label={"Bio"} value={editedData.bio!} onChange={handleInputChange}/>
+                    </div>
+                    <div className={styles.Buttons}>
+                        <button onClick={handleSave}>Save</button>
+                        <button onClick={handleClose}>Close</button>
+                    </div>
                 </div>
-            </div>
 
-            <Snackbar anchorOrigin={{ vertical:"bottom", horizontal:"center"}}
-                      open={snackbarState.open}
-                      TransitionComponent={Slide}
-                      onClose={() => setSnackbarState({...snackbarState, open:false})}>
-                <Alert onClose={() => setSnackbarState({...snackbarState, open:false})} severity="error" sx={{width: '100%'}}>
-                    {snackbarState.text}
-                </Alert>
-            </Snackbar>
-        </div>
+                <Snackbar anchorOrigin={{ vertical:"bottom", horizontal:"center"}}
+                          open={snackbarState.open}
+                          TransitionComponent={Slide}
+                          onClose={() => setSnackbarState({...snackbarState, open:false})}>
+                    <Alert onClose={() => setSnackbarState({...snackbarState, open:false})} severity="error" sx={{width: '100%'}}>
+                        {snackbarState.text}
+                    </Alert>
+                </Snackbar>
+            </div>
+        )
     ))
 };
 

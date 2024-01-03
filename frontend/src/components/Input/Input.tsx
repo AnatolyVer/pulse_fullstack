@@ -26,7 +26,7 @@ const Input = ({value, type, label, onChange}:InputProps) => {
     return (
         <div className={styles.Wrapper}>
             {label && <label htmlFor={label.toLowerCase()}>{label}</label>}
-            <input type={inputType} id={label ? label.toLowerCase() : type} value={value} onChange={onChange}/>
+            <input type={inputType} name={label.toLowerCase()} id={label ? label.toLowerCase() : type} value={value} onChange={onChange}/>
             <InputIcon inputType={type} isVisible={isVisible} showValue={showValue}/>
         </div>
     );

@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 import userDto from "../dto/userDto.js";
 import TokenService from "./tokenService.js";
 import jwt from "jsonwebtoken";
+import {log} from "debug";
 export default class UserService {
     static async createUser(user, res) {
         try{
@@ -82,6 +83,27 @@ export default class UserService {
         }catch (e) {
             console.error(e)
             res.status(404).send("User not found")
+        }
+    }
+
+
+    static async updateUser(updatedUser, id, res){
+        try {
+            const user = await User.findById(id)
+
+            const isSameUsername = await User.findOne({username: updatedUser.username})
+            if (isSameUsername) return res.status(404).send("Username is already used")
+
+            for (let key in updatedUser) {
+                if (key !== 'id') {
+                    user[key] = updatedUser[key];
+                }
+            }
+            await user.save()
+            res.status(200).end()
+        }catch (e) {
+            console.error(e)
+            res.status(404).send("Some issues with updating")
         }
     }
 }
