@@ -9,7 +9,9 @@ userRouter.get('/:id', validateTokens, UserController.getUser)
 
 userRouter.post('/sign_up', UserController.signUp)
 userRouter.post('/sign_in', UserController.signIn)
-
 userRouter.post("/logout", UserController.logOut)
+
+userRouter.put('/update', UserController.signUp)
+
 
 export default userRouter
