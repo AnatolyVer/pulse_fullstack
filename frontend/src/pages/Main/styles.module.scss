@@ -1,39 +1,10 @@
 .Content {
   display: flex;
+  justify-content: space-between;
   height: 92%;
   width: 100%;
   align-self: end;
 }
-
-.ProfileBar {
-  height: 92%;
-  box-sizing: border-box;
-  position: absolute;
-  right: 0;
-  display: flex;
-  transition: width 0.5s ease-in-out
-}
-
-
-.Info{
-  background: #4e4d4e;
-}
-
-.arrowButton {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  width: 2%;
-}
-
-.visible {
-  width: 27%;
-}
-
-.hidden {
-  width: 2%;
-}
-
 
 
 

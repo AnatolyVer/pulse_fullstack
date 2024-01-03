@@ -1,8 +1,12 @@
-import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
+import {useSelector} from "react-redux";
+import {useNavigate} from "react-router-dom";
+
+import ChatBar from "@pages/Main/ChatBar/ChatBar.tsx";
+import ProfileBar from "@pages/Main/ProfileBar/ProfileBar.tsx";
 
 import styles from './styles.module.scss'
-import {useSelector} from "react-redux";
+
 const Main = () => {
 
     const nav = useNavigate()
@@ -18,9 +22,8 @@ const Main = () => {
 
     return (
         <div className={styles.Content}>
-           {/* <div style={{width:"27%"}}></div>
-            <div style={{width:"46%"}}></div>
-            <ProfileBar user = {user}/>*/}
+            <ChatBar/>
+            <ProfileBar user = {user}/>
         </div>
     );
 };

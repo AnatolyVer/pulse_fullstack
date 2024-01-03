@@ -1,0 +1,1 @@
+export type TInputType = "password" | "text" | "search"

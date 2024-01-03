@@ -1,0 +1,9 @@
+.ProfileBar {
+  width: 20%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-left: 2px solid white;
+  transition: width 0.5s ease-in-out;
+}
