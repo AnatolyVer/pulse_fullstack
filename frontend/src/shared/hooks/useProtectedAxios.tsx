@@ -1,15 +1,19 @@
 import {useDispatch} from "react-redux";
+import {useNavigate} from "react-router-dom";
 import axios, {AxiosPromise} from "axios";
 import Cookies from "js-cookie";
 
 import {clearCurrentUser} from "@redux/userSlice.ts";
-import {useNavigate} from "react-router-dom";
+import useLoader from "@components/Loader/useLoader.ts";
 
 const useProtectedAxios = ():[(requestFunction: () => AxiosPromise) => Promise<Error | AxiosPromise | undefined>, () => Promise<void> ] => {
     const dispatch = useDispatch();
     const nav = useNavigate()
+
+    const [openLoader, closeLoader] = useLoader()
     const protectedAxiosRequest = async (requestFunction: () => AxiosPromise): Promise<Error | AxiosPromise | undefined> => {
         try {
+            openLoader()
             return await requestFunction();
         } catch (e: any) {
             switch (e.response.status) {
@@ -23,11 +27,13 @@ const useProtectedAxios = ():[(requestFunction: () => AxiosPromise) => Promise<E
                 default:
                     throw new Error(e.response.data)
             }
+        }finally {
+            closeLoader()
         }
     };
 
     const logout = async () => {
-
+        openLoader()
         axios.post(`${import.meta.env.VITE_RESTAPI_DEV_URL}/user/logout`, {},{
             headers:{
                 'access-token':Cookies.get("access-token"),
@@ -40,6 +46,7 @@ const useProtectedAxios = ():[(requestFunction: () => AxiosPromise) => Promise<E
             dispatch(clearCurrentUser())
             nav("/")
         }).catch((e) => console.error(e))
+            .finally(() => closeLoader())
     }
 
     return [protectedAxiosRequest, logout];

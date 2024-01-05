@@ -1,19 +1,20 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch} from "react-redux";
 
 import {updateUser} from "@api/updateUser.ts";
+import {getUser} from "@api/getUser.ts";
 
 import Input from '@components/Input/Input';
 import Textarea from '@components/Textarea/Textarea';
-import Loader from '@components/Loader';
 import {setCurrentUser} from "@redux/userSlice.ts";
 import IUser from "@shared/interfaces/IUser.ts";
 import useProtectedAxios from "@shared/hooks/useProtectedAxios.tsx";
 
-import {Alert, Avatar, Slide} from "@mui/material";
-import Snackbar from "@mui/material/Snackbar";
+import {Avatar} from "@mui/material";
 
 import styles from './styles.module.scss'
+import useSnackBar from "@components/SnackBar/useSnackBar.tsx";
+import useLoader from "@components/Loader/useLoader.ts";
 
 
 interface EditProfileModalProps {
@@ -26,14 +27,17 @@ const EditProfileModal = ({ isOpen, onClose, userData }:EditProfileModalProps) =
 
     const dispatch = useDispatch()
 
+    const [openSnackBar, closeSnackBar] =  useSnackBar()
+    const [openLoader, closeLoader] = useLoader()
+
     const [protectedAxiosRequest,] = useProtectedAxios()
 
-    const [isLoading, setIsLoading] = useState(false)
     const [editedData, setEditedData] = useState(userData);
-    const [snackbarState, setSnackbarState] = React.useState({
-        open:false,
-        text:""
-    });
+
+
+    useEffect(() => {
+        setEditedData(userData)
+    }, [userData]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -45,52 +49,52 @@ const EditProfileModal = ({ isOpen, onClose, userData }:EditProfileModalProps) =
 
     const handleClose = () => {
         setEditedData(userData)
-        setSnackbarState({open:false, text:""})
+        closeSnackBar()
         onClose()
     }
 
     const handleSave = () => {
-        setIsLoading(true)
-        protectedAxiosRequest(() => updateUser(editedData))
+        openLoader()
+
+        const userToSend:Partial<IUser> = {};
+
+        for (let key in editedData) {
+            if (userData[key] !== editedData[key]) {
+                userToSend[key] = editedData[key];
+            }
+        }
+
+        protectedAxiosRequest(() => updateUser(userToSend))
             .then(() => {
-                dispatch(setCurrentUser(editedData))
+                const id = localStorage.getItem("id")
+                if (id !== null) {
+                    protectedAxiosRequest(() => getUser(id))
+                        .then((res:any) => dispatch(setCurrentUser(res.data)))
+                }
                 handleClose()
             })
             .catch((e: Error) => {
-                setSnackbarState({open:true, text:e.message})
+               openSnackBar(e.message)
             })
-            .finally(() =>  setIsLoading(false))
+            .finally(() =>  closeLoader())
     };
 
     return (isOpen && (
-        isLoading ? (
-            <Loader/>
-            ) : (
-            <div className={styles.Modal}>
-                <div className={styles.Content}>
-                    <h2>Edit Profile</h2>
-                    <div className={styles.User}>
-                        <Avatar sx={{ height: '70px', width: '70px' }} src={userData.avatar_url}/>
-                        <Input label={"Username"} value={editedData.username!} type={"text"} onChange={handleInputChange}/>
-                        <Input label={"Nickname"} value={editedData.nickname!} type={"text"} onChange={handleInputChange}/>
-                        <Textarea label={"Bio"} value={editedData.bio!} onChange={handleInputChange}/>
-                    </div>
-                    <div className={styles.Buttons}>
-                        <button onClick={handleSave}>Save</button>
-                        <button onClick={handleClose}>Close</button>
-                    </div>
+        <div className={styles.Modal}>
+            <div className={styles.Content}>
+                <h2>Edit Profile</h2>
+                <div className={styles.User}>
+                    <Avatar sx={{ height: '70px', width: '70px' }} src={userData.avatar_url}/>
+                    <Input label={"Nickname"} value={editedData.nickname!} type={"text"} onChange={handleInputChange}/>
+                    <Input label={"Username"} value={editedData.username!} type={"text"} onChange={handleInputChange}/>
+                    <Textarea label={"Bio"} value={editedData.bio!} onChange={handleInputChange}/>
                 </div>
-
-                <Snackbar anchorOrigin={{ vertical:"bottom", horizontal:"center"}}
-                          open={snackbarState.open}
-                          TransitionComponent={Slide}
-                          onClose={() => setSnackbarState({...snackbarState, open:false})}>
-                    <Alert onClose={() => setSnackbarState({...snackbarState, open:false})} severity="error" sx={{width: '100%'}}>
-                        {snackbarState.text}
-                    </Alert>
-                </Snackbar>
+                <div className={styles.Buttons}>
+                    <button onClick={handleSave}>Save</button>
+                    <button onClick={handleClose}>Close</button>
+                </div>
             </div>
-        )
+        </div>
     ))
 };
 
