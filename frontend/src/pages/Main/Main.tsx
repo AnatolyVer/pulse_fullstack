@@ -19,7 +19,6 @@ const Main = () => {
         if (!isAuthed) nav('/sign_in')
     }, [user]);
 
-
     return (
         <div className={styles.Content}>
             <ChatBar/>

@@ -6,14 +6,13 @@ import Cookies from "js-cookie";
 import {clearCurrentUser} from "@redux/userSlice.ts";
 import useLoader from "@components/Loader/useLoader.ts";
 
-const useProtectedAxios = ():[(requestFunction: () => AxiosPromise) => Promise<Error | AxiosPromise | undefined>, () => Promise<void> ] => {
+const useProtectedAxios = ():[(requestFunction: () => AxiosPromise) => Promise<AxiosPromise | undefined>, () => Promise<void> ] => {
     const dispatch = useDispatch();
     const nav = useNavigate()
 
     const [openLoader, closeLoader] = useLoader()
-    const protectedAxiosRequest = async (requestFunction: () => AxiosPromise): Promise<Error | AxiosPromise | undefined> => {
+    const protectedAxiosRequest = async (requestFunction: () => AxiosPromise): Promise<AxiosPromise | undefined> => {
         try {
-            openLoader()
             return await requestFunction();
         } catch (e: any) {
             switch (e.response.status) {
@@ -27,8 +26,6 @@ const useProtectedAxios = ():[(requestFunction: () => AxiosPromise) => Promise<E
                 default:
                     throw new Error(e.response.data)
             }
-        }finally {
-            closeLoader()
         }
     };
 

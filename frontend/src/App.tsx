@@ -1,5 +1,5 @@
 import {useEffect} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {Route, Routes} from "react-router-dom";
 
 import {getUser} from "@api/getUser.ts";
@@ -15,7 +15,6 @@ function App() {
 
     const dispatch = useDispatch();
 
-    const isLoading = useSelector((state: any)  => state.loader)
     const [openLoader, closeLoader] = useLoader()
     const [protectedAxiosRequest] = useProtectedAxios()
 
@@ -29,17 +28,17 @@ function App() {
         }
     }, []);
 
-    return (isLoading ? (
-            <Loader/>
-        ) : (<>
+    return (
+        <>
             <Header/>
             <Routes>
                 {<Route path="" element={<Main/>}/>}
                 <Route path="/sign_in" element={<SignInAndUpPage link={"sign_in"}/>}/>
                 <Route path="/sign_up" element={<SignInAndUpPage link={"sign_up"}/>}/>
             </Routes>
+            <Loader/>
             <SnackBar/>
-        </>)
+        </>
   )
 }
 

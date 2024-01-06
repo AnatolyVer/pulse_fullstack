@@ -1,24 +1,22 @@
 import React, {useState} from 'react';
 import {useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import axios from "axios";
-import Cookies from "js-cookie";
-
 
 import {getUser} from "@api/getUser.ts";
+import {signUser} from "@api/signUser.ts";
+
 import Logo from "@components/Logo/Logo.tsx";
 import Input from "@components/Input/Input.tsx";
+import useSnackBar from "@components/SnackBar/useSnackBar.tsx";
+import useLoader from "@components/Loader/useLoader.ts";
 import useProtectedAxios from "@shared/hooks/useProtectedAxios.tsx";
 import {IUserSign} from "@shared/interfaces/IUserSign.ts";
-import useSnackBar from "@components/SnackBar/useSnackBar.tsx";
-import {clearCurrentUser, setCurrentUser} from "@redux/userSlice.ts";
+import {setCurrentUser} from "@redux/userSlice.ts";
 
 import {LinkButton} from "./linkButton.tsx";
 import {SubmitButton} from "./submitButton.tsx";
 
 import styles from "./styles.module.scss";
-import useLoader from "@components/Loader/useLoader.ts";
-
 
 const defaultFormData: IUserSign = {
     username: '',
@@ -28,18 +26,15 @@ const defaultFormData: IUserSign = {
 }
 const SignInAndUpPage = ({link}:{link:"sign_up" | "sign_in"}) => {
 
+    const dispatch = useDispatch()
+    const nav = useNavigate()
     const [formData, setFormData] = useState(defaultFormData);
 
     const [openLoader, closeLoader] = useLoader()
-
     const [openSnackBar,] = useSnackBar()
-    const dispatch = useDispatch()
-    const nav = useNavigate()
-
     const [protectedAxiosRequest] = useProtectedAxios()
 
     const isSignUpPage = link === "sign_up"
-
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = event.target;
         setFormData({ ...formData, [id]: value });
@@ -49,19 +44,13 @@ const SignInAndUpPage = ({link}:{link:"sign_up" | "sign_in"}) => {
         event.preventDefault();
         try {
             openLoader()
-            const res = await axios.post(  `${import.meta.env.VITE_RESTAPI_DEV_URL}/user/${link}`, formData);
-            localStorage.setItem("id", res.data)
-            Cookies.set('access-token', res.headers['access-token'], { expires: 30 })
-            Cookies.set('refresh-token', res.headers['refresh-token'], { expires: 40 })
-            protectedAxiosRequest(() => getUser(res.data))
-                .then((res:any) => dispatch(setCurrentUser(res.data)))
-                .catch(() => dispatch(clearCurrentUser()))
-                .finally(() => {
-                    nav("/")
-                })
+            const userId = (await signUser(link, formData)).data
+            const user = (await protectedAxiosRequest(() => getUser(userId)))!.data
+            dispatch(setCurrentUser(user))
+            nav("/")
         }
-        catch (error: any) {
-            openSnackBar(error.response.data)
+        catch (e: any) {
+            openSnackBar(e.message)
         }
         finally {
             closeLoader()

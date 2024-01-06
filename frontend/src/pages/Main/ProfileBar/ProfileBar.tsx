@@ -18,9 +18,9 @@ const ProfileBar = ({ user }: { user: IUser }) => {
                 {user && (
                     <>
                         <h2>Profile</h2>
-                        <Avatar sx={{ height: '90px', width: '90px' }} src={user.avatar_url} alt={user.nickname.toUpperCase()}/>
+                        <Avatar sx={{width:"90px", height:"90px"}} src={user.avatar_url}/>
                         <p>{user.nickname}</p>
-                        <p>{user.username}</p>
+                        <p>@{user.username}</p>
                         <p>{user.bio}</p>
                         <div className={styles.Settings}>
                             <h2>Settings</h2>
@@ -30,9 +30,11 @@ const ProfileBar = ({ user }: { user: IUser }) => {
                     </>
                 )}
             </div>
-            <EditProfileModal isOpen={isModalOpen}
-                              userData={user}
-                              onClose={() => setIsModalOpen(false)}/>
+            {user && (
+                <EditProfileModal isOpen={isModalOpen}
+                                  userData={user}
+                                  onClose={() => setIsModalOpen(false)}/>
+            )}
         </>
     );
 };

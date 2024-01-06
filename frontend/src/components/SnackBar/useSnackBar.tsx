@@ -1,5 +1,5 @@
-import { openSnackbar } from "@redux/snackbarSlice";
 import {useDispatch} from "react-redux";
+import { openSnackbar } from "@redux/snackbarSlice";
 
 const UseSnackBar = ():[(text: string) => void, () => void] => {
 

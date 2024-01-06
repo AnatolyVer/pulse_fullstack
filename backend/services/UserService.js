@@ -3,7 +3,20 @@ import bcrypt from 'bcrypt'
 import userDto from "../dto/userDto.js";
 import TokenService from "./tokenService.js";
 import jwt from "jsonwebtoken";
-import {log} from "debug";
+
+import {Storage} from '@google-cloud/storage'
+import {dirname} from "path";
+import path from "path";
+
+const __dirname = dirname(__filename);
+
+const credentialsPath = path.join(__dirname, process.env.PATH_TO_PROD_JSON);
+process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath;
+
+const storage = new Storage({ projectId: process.env.PROD_PROJECT_ID })
+const bucketName = process.env.GOOGLE_BUCKET_NAME
+const bucket = storage.bucket(bucketName)
+
 export default class UserService {
     static async createUser(user, res) {
         try{
@@ -100,10 +113,51 @@ export default class UserService {
                 }
             }
             await user.save()
-            res.status(200).end()
+            res.status(200).send(id)
         }catch (e) {
             console.error(e)
             res.status(404).send("Some issues with updating")
+        }
+    }
+
+    static async setAvatar(avatar, fileName) {
+        try {
+            const gcsFile = bucket.file(fileName);
+
+            const stream = gcsFile.createWriteStream({
+                metadata: {
+                    contentType: avatar.mimetype,
+                },
+            });
+
+            stream.on('error', (err) => {
+                throw new Error('Error uploading file:' + err.message);
+            });
+
+            stream.on('finish', async () => {
+                console.log('The file has been successfully uploaded to Google Cloud Storage.');
+            });
+            stream.end(avatar.buffer);
+            return await this.getAvatar(gcsFile);
+        } catch (e) {
+            throw new Error(e.message);
+        }
+    }
+
+    static async getAvatar(fileName) {
+        try {
+            const currentDate = new Date();
+            const expiresDate = new Date(currentDate);
+            expiresDate.setFullYear(currentDate.getFullYear() + 1);
+
+            const [url] = await fileName.getSignedUrl({
+                action: 'read',
+                expires: expiresDate.toISOString(),
+            });
+
+            return url + `&data=${Date.now()}`;
+        } catch (e) {
+            throw new Error(e.message);
         }
     }
 }

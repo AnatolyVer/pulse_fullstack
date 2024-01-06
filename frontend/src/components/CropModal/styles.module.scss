@@ -1,0 +1,47 @@
+.CropModal{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  background-color: rgba(0,0,0, .9);
+  z-index: 1000;
+}
+
+.CropField{
+  width: 60%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  img{
+    max-height: 80vh !important;
+    max-width: 60vh !important;
+  }
+}
+
+.PreviewField{
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.Buttons{
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 20px;
+  width: 250px;
+  button{
+    background-color: transparent;
+    border: none;
+    color: white;
+    border-bottom: 2px solid transparent;
+    &:hover{
+      border-bottom: 2px solid white;
+    }
+  }
+}
