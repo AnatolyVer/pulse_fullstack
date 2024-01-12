@@ -1,5 +1,4 @@
 import React, {useState } from 'react';
-import {Avatar} from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import CropModal from '@components/CropModal/CropModal';
 import EditIcon from '@mui/icons-material/Edit';
@@ -7,6 +6,8 @@ import classes from './styles.module.scss'
 import {IAvatarHook} from "@shared/interfaces/IAvatar.ts";
 import {Crop} from "react-image-crop";
 import useLoader from "@components/Loader/useLoader.ts";
+import Avatar from '@components/Avatar';
+
 interface AvatarUploaderProps{
     avatar:IAvatarHook,
 }
@@ -39,7 +40,7 @@ function AvatarUploader ({avatar}:AvatarUploaderProps){
     return (
         <div className={classes.AvatarUploader}>
             <label htmlFor="avatar">
-                <Avatar src={avatar.avatar.previewPhoto} sx={{width: 90, height: 90, cursor:'pointer' }}/>
+                <Avatar src={`${avatar.avatar.previewPhoto}`} sx={{width: 90, height: 90, cursor:'pointer' }}/>
             </label>
             <input hidden key={Date.now()} type="file" id="avatar" name="avatar" onChange={(e)=> handleImageChange(e)} />
             <CloseIcon sx={{position:"absolute", left:-10, top:0, cursor:'pointer', display:display}} onClick={avatar.setDefaultImage}/>
@@ -47,6 +48,6 @@ function AvatarUploader ({avatar}:AvatarUploaderProps){
             <CropModal open={open} crop={crop} setCrop={setCrop} setOpen={setOpen} photo={avatar} aspect={1}/>
         </div>
     );
-};
+}
 
 export default AvatarUploader;

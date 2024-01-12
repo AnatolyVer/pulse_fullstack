@@ -1,21 +1,20 @@
 import React, {useEffect, useState} from 'react';
-import {useDispatch} from "react-redux";
 
 import {updateUser} from "@api/updateUser.ts";
-import {getUser} from "@api/getUser.ts";
 
 import Input from '@components/Input/Input';
 import Textarea from '@components/Textarea/Textarea';
-import {setCurrentUser} from "@redux/userSlice.ts";
 import IUser from "@shared/interfaces/IUser.ts";
 import useProtectedAxios from "@shared/hooks/useProtectedAxios.tsx";
 
-import styles from './styles.module.scss'
 import useSnackBar from "@components/SnackBar/useSnackBar.tsx";
 import useLoader from "@components/Loader/useLoader.ts";
 import {IAvatarHook} from "@shared/interfaces/IAvatar.ts";
 import useAvatarUploading from "@shared/hooks/useAvatarUploading.ts";
 import AvatarUploader from "@components/AvatarUploader/AvatarUploader.tsx";
+import {uploadAvatar} from "@api/uploadAvatar.ts";
+
+import styles from './styles.module.scss'
 
 
 interface EditProfileModalProps {
@@ -26,16 +25,12 @@ interface EditProfileModalProps {
 
 const EditProfileModal = ({ isOpen, onClose, userData }:EditProfileModalProps) => {
 
-    const dispatch = useDispatch()
-
-    const [openSnackBar, closeSnackBar] =  useSnackBar()
-    const [openLoader, closeLoader] = useLoader()
-    const avatar:IAvatarHook = useAvatarUploading(userData.avatar_url)
-
-    const [protectedAxiosRequest,] = useProtectedAxios()
-
     const [editedData, setEditedData] = useState(userData);
 
+    const [openSnackBar, closeSnackBar] =  useSnackBar()
+    const [openLoader,] = useLoader()
+    const [protectedAxiosRequest,] = useProtectedAxios()
+    const avatar:IAvatarHook = useAvatarUploading(userData.avatar_url)
 
     useEffect(() => {
         setEditedData(userData)
@@ -51,33 +46,34 @@ const EditProfileModal = ({ isOpen, onClose, userData }:EditProfileModalProps) =
 
     const handleClose = () => {
         setEditedData(userData)
+        avatar.setDefaultImage()
         closeSnackBar()
         onClose()
     }
 
     const handleSave = async () => {
         openLoader()
-
-        const userToSend:Partial<IUser> = {};
-
-        for (let key in editedData) {
-            if (userData[key] !== editedData[key]) {
-                userToSend[key] = editedData[key];
-            }
-        }
-
         try {
-            const id = (await protectedAxiosRequest(() => updateUser(userToSend)))!.data
-            const user = (await protectedAxiosRequest(() => getUser(id)))!.data
-            dispatch(setCurrentUser(user))
-            handleClose()
+            const userToSend:Partial<IUser> = {};
+            for (let key in editedData) {
+                if (userData[key] !== editedData[key]) {
+                    userToSend[key] = editedData[key];
+                }
+            }
+
+            if (avatar.avatar.fileToUpload != null){
+                userToSend.avatar_url = (await protectedAxiosRequest(() => uploadAvatar(avatar.avatar.fileToUpload!)))!.data
+            }
+
+            await protectedAxiosRequest(() => updateUser(userToSend))
+
+            setTimeout(() => {
+                window.location.reload()
+            }, 500);
         }catch (e: any){
             openSnackBar(e.message)
-        }finally {
-            closeLoader()
         }
     };
-
 
     return (isOpen && (
         <div className={styles.Modal}>

@@ -1,81 +1,63 @@
-import User from '../models/user.js'
+import path, { dirname } from "path";
+import { fileURLToPath } from 'url';
+import dotenv from "dotenv";
 import bcrypt from 'bcrypt'
+import jwt from "jsonwebtoken";
+import {Storage} from '@google-cloud/storage'
+
+import User from '../models/user.js'
 import userDto from "../dto/userDto.js";
 import TokenService from "./tokenService.js";
-import jwt from "jsonwebtoken";
 
-import {Storage} from '@google-cloud/storage'
-import {dirname} from "path";
-import path from "path";
+dotenv.config()
 
+const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const credentialsPath = path.join(__dirname, process.env.PATH_TO_PROD_JSON);
+const credentialsPath = path.join(__dirname, process.env.PATH_TO_CLOUD_JSON);
 process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath;
 
-const storage = new Storage({ projectId: process.env.PROD_PROJECT_ID })
+const storage = new Storage({ projectId: process.env.CLOUD_PROJECT_ID })
 const bucketName = process.env.GOOGLE_BUCKET_NAME
 const bucket = storage.bucket(bucketName)
 
 export default class UserService {
-    static async createUser(user, res) {
+
+    //refactored
+    static async createUser({username, nickname, password}) {
         try{
-            const {username, nickname, password, confirm} = user
-            const sameUser = await User.findOne({username})
-            if (!sameUser){
-                if (password !== confirm) {
-                    res.status(400).send("Passwords are not same")
-                    return
-                }
-                const hashedPassword = await bcrypt.hash(password, await bcrypt.genSalt())
-                const user = await User.create({username, nickname, password: hashedPassword})
-                const {accessToken, refreshToken} = await TokenService.generateTokens(user)
-                user.sessions.push({accessToken, refreshToken})
-                await user.save()
-                res.setHeader('access-token', accessToken);
-                res.setHeader('refresh-token', refreshToken);
-                res.status(200).json(user._id)
-            }
-            else {
-                res.status(409).send("User already exists")
-            }
+            const hashedPassword = await bcrypt.hash(password, await bcrypt.genSalt())
+            const newUser = await User.create({username, nickname, password: hashedPassword})
+            const {accessToken, refreshToken} = await TokenService.generateTokens(newUser)
+            newUser.sessions.push({accessToken, refreshToken})
+            await newUser.save()
+            return {accessToken, refreshToken, _id:newUser._id}
         }catch (e) {
             console.error(e)
+            throw new Error(e.message)
         }
     }
 
-    static async logUser({username, password}, res) {
+    static async logUser({username}) {
         try{
-            const sameUser = await User.findOne({username})
-            if (sameUser){
-                const isPasswordCorrect = await bcrypt.compare(password, sameUser.password)
-                if (isPasswordCorrect){
-                    const {accessToken, refreshToken} = await TokenService.generateTokens(sameUser)
-                    sameUser.sessions.push({accessToken, refreshToken})
-                    await sameUser.save()
-                    res.setHeader('access-token', accessToken);
-                    res.setHeader('refresh-token', refreshToken);
-                    res.status(200).json(sameUser._id)
-                }
-                else {
-                    res.status(404).send("Wrong data or user doesn't exist")
-                }
-            }
-            else {
-                res.status(404).send("Wrong data or user doesn't exist")
-            }
+            const user = await User.findOne({ username });
+            const {accessToken, refreshToken} = await TokenService.generateTokens(user)
+            user.sessions.push({accessToken, refreshToken})
+            await user.save()
+            return {accessToken, refreshToken, _id:user._id}
         }catch (e) {
             console.error(e)
+            throw new Error(e.message)
         }
     }
 
-    static async getUser(id, res) {
+    static async getUser(id) {
         try{
             const user = await User.findById(id)
-            res.status(200).json(new userDto(user))
+            return new userDto(user)
         }catch (e) {
             console.error(e)
-            res.status(404).send("User not found")
+            throw new Error(e.message)
         }
     }
 

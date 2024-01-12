@@ -8,7 +8,7 @@ const store = configureStore({
     reducer: {
         user: userReducer,
         snackbar:snackbarReducer,
-        loader:loaderReducer
+        loader:loaderReducer,
     },
 });
 

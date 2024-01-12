@@ -11,22 +11,32 @@ import {setCurrentUser} from "@redux/userSlice";
 import useProtectedAxios from "@shared/hooks/useProtectedAxios.tsx";
 import SnackBar from "@components/SnackBar/SnackBar";
 import useLoader from "@components/Loader/useLoader.ts";
+
 function App() {
 
-    const dispatch = useDispatch();
-
+    const dispatch = useDispatch()
     const [openLoader, closeLoader] = useLoader()
     const [protectedAxiosRequest] = useProtectedAxios()
 
-    useEffect( () => {
-        const id = localStorage.getItem("id")
-        if (id !== null) {
-            openLoader()
-            protectedAxiosRequest(() => getUser(id))
-                .then((res:any) => dispatch(setCurrentUser(res.data)))
-                .finally(() =>  closeLoader())
-        }
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const id = localStorage.getItem("id");
+                if (id !== null) {
+                    openLoader();
+                    const userResponse = await protectedAxiosRequest(() => getUser(id));
+                    dispatch(setCurrentUser(userResponse?.data));
+                }
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+            } finally {
+                closeLoader();
+            }
+        };
+
+        fetchUserData();
     }, []);
+
 
     return (
         <>

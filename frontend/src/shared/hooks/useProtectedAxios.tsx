@@ -41,7 +41,7 @@ const useProtectedAxios = ():[(requestFunction: () => AxiosPromise) => Promise<A
             Cookies.remove('refresh-token')
             localStorage.removeItem("id")
             dispatch(clearCurrentUser())
-            nav("/")
+            nav("/sign_in")
         }).catch((e) => console.error(e))
             .finally(() => closeLoader())
     }

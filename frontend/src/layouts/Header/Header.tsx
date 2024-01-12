@@ -1,16 +1,27 @@
 import {useSelector} from "react-redux";
-import {useNavigate} from "react-router-dom";
 
 import Logo from '@components/Logo/Logo';
 import useProtectedAxios from "@shared/hooks/useProtectedAxios.tsx";
+import useWebSocket from "@shared/hooks/useWebSocket.ts";
 
 import styles from './styles.module.scss'
+import {useEffect} from "react";
 
 const Header = () => {
 
     const [, logout] = useProtectedAxios()
     const user = useSelector((state: any)  => state.user)
-    const nav = useNavigate()
+
+    const socket = useWebSocket()
+
+    useEffect(() => {
+        if (user) socket.connect(user._id)
+        else socket.close()
+    }, [user]);
+
+    const handleLogout =  async () => {
+       await logout()
+    }
 
     return (
         <header className={styles.Header}>
@@ -18,7 +29,7 @@ const Header = () => {
                 <h1>Pulse</h1>
                 <Logo size='small'/>
             </div>
-            {user && <button onClick={async() => logout().then(() => nav('/') )}>Log out</button>}
+            {user && <button onClick={handleLogout}>Log out</button>}
         </header>
     );
 };

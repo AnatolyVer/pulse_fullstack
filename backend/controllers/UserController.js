@@ -3,12 +3,17 @@ import jwt from "jsonwebtoken";
 
 export default class UserController {
 
+
+    //refactored
     static async signUp(req, res) {
         try{
             const user = req.body
-            await userService.createUser(user, res)
+            const {accessToken, refreshToken, _id} = await userService.createUser(user)
+            res.setHeader('access-token', accessToken);
+            res.setHeader('refresh-token', refreshToken);
+            res.status(200).json(_id)
         }catch (e) {
-            res.status(500).end()
+            res.status(500).end(e.message)
         }
         return res
     }
@@ -16,9 +21,12 @@ export default class UserController {
     static async signIn(req, res) {
         try{
             const user = req.body
-            await userService.logUser(user, res)
+            const {accessToken, refreshToken, _id} = await userService.logUser(user, res)
+            res.setHeader('access-token', accessToken);
+            res.setHeader('refresh-token', refreshToken);
+            res.status(200).json(_id)
         }catch (e) {
-            res.status(500).end()
+            res.status(500).end(e.message)
         }
         return res
     }
@@ -26,9 +34,10 @@ export default class UserController {
     static async getUser(req, res) {
         try{
             const {id} = req.params
-            await userService.getUser(id, res)
+            const user = await userService.getUser(id)
+            res.status(200).json(user)
         }catch (e) {
-            res.status(500).end()
+            res.status(500).send(e.message)
         }
         return res
     }
@@ -37,7 +46,7 @@ export default class UserController {
         try{
             await userService.logOut(req, res)
         }catch (e) {
-            res.status(500).end()
+            res.status(500).send(e.message)
         }
         return res
     }
@@ -48,7 +57,7 @@ export default class UserController {
             const {_id} = jwt.decode(req.headers['refresh-token'])
             await userService.updateUser(user, _id, res)
         }catch (e) {
-            res.status(500).end()
+            res.status(500).send(e.message)
         }
         return res
     }
@@ -57,12 +66,12 @@ export default class UserController {
         try {
             const avatar = req.file;
             const {username} = jwt.decode(req.headers['access-token'])
-            const fileName = [username,'_','avatar'].join();
+            const fileName = username + '_' + 'avatar';
             const url = await userService.setAvatar(avatar, fileName)
             res.status(200).send(url)
         } catch (err) {
             console.error(err);
-            res.status(404).end()
+            res.status(404).send(err)
         }
         return res
     }
