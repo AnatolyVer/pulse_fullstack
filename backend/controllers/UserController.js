@@ -13,6 +13,7 @@ export default class UserController {
             res.setHeader('refresh-token', refreshToken);
             res.status(200).json(_id)
         }catch (e) {
+            console.error(e);
             res.status(500).end(e.message)
         }
         return res
@@ -26,6 +27,7 @@ export default class UserController {
             res.setHeader('refresh-token', refreshToken);
             res.status(200).json(_id)
         }catch (e) {
+            console.error(e);
             res.status(500).end(e.message)
         }
         return res
@@ -46,6 +48,7 @@ export default class UserController {
         try{
             await userService.logOut(req, res)
         }catch (e) {
+            console.error(e);
             res.status(500).send(e.message)
         }
         return res
@@ -57,6 +60,7 @@ export default class UserController {
             const {_id} = jwt.decode(req.headers['refresh-token'])
             await userService.updateUser(user, _id, res)
         }catch (e) {
+            console.error(e);
             res.status(500).send(e.message)
         }
         return res

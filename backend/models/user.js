@@ -33,6 +33,9 @@ const userSchema = new Schema({
     online:{
         type:Boolean,
         default:false
+    },
+    last_seen:{
+        type:Date
     }
 });
 

@@ -1,5 +1,5 @@
-import path, { dirname } from "path";
-import { fileURLToPath } from 'url';
+import path, {dirname} from "path";
+import {fileURLToPath} from 'url';
 import dotenv from "dotenv";
 import bcrypt from 'bcrypt'
 import jwt from "jsonwebtoken";
@@ -56,7 +56,6 @@ export default class UserService {
             const user = await User.findById(id)
             return new userDto(user)
         }catch (e) {
-            console.error(e)
             throw new Error(e.message)
         }
     }

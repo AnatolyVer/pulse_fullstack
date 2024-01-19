@@ -6,6 +6,6 @@ export default interface IUser {
     bio: string;
     chats: string[];
     online:boolean;
-
+    last_seen:string;
     [key: string]: string | string[] | boolean;
 }

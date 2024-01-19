@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 
 import {updateUser} from "@api/updateUser.ts";
+import {uploadAvatar} from "@api/uploadAvatar.ts";
 
 import Input from '@components/Input/Input';
 import Textarea from '@components/Textarea/Textarea';
@@ -12,10 +13,8 @@ import useLoader from "@components/Loader/useLoader.ts";
 import {IAvatarHook} from "@shared/interfaces/IAvatar.ts";
 import useAvatarUploading from "@shared/hooks/useAvatarUploading.ts";
 import AvatarUploader from "@components/AvatarUploader/AvatarUploader.tsx";
-import {uploadAvatar} from "@api/uploadAvatar.ts";
 
 import styles from './styles.module.scss'
-
 
 interface EditProfileModalProps {
     isOpen: boolean;
@@ -28,7 +27,7 @@ const EditProfileModal = ({ isOpen, onClose, userData }:EditProfileModalProps) =
     const [editedData, setEditedData] = useState(userData);
 
     const [openSnackBar, closeSnackBar] =  useSnackBar()
-    const [openLoader,] = useLoader()
+    const [openLoader, closeLoader] = useLoader()
     const [protectedAxiosRequest,] = useProtectedAxios()
     const avatar:IAvatarHook = useAvatarUploading(userData.avatar_url)
 
@@ -65,13 +64,17 @@ const EditProfileModal = ({ isOpen, onClose, userData }:EditProfileModalProps) =
                 userToSend.avatar_url = (await protectedAxiosRequest(() => uploadAvatar(avatar.avatar.fileToUpload!)))!.data
             }
 
-            await protectedAxiosRequest(() => updateUser(userToSend))
+            if (Object.keys(userToSend).length > 0) {
+                await protectedAxiosRequest(() => updateUser(userToSend));
+            }
 
             setTimeout(() => {
                 window.location.reload()
             }, 500);
         }catch (e: any){
             openSnackBar(e.message)
+        }finally {
+            closeLoader()
         }
     };
 
@@ -83,7 +86,7 @@ const EditProfileModal = ({ isOpen, onClose, userData }:EditProfileModalProps) =
                     <AvatarUploader avatar={avatar}/>
                     <Input label={"Nickname"} value={editedData.nickname!} type={"text"} onChange={handleInputChange}/>
                     <Input label={"Username"} value={editedData.username!} type={"text"} onChange={handleInputChange}/>
-                    <Textarea label={"Bio"} value={editedData.bio!} onChange={handleInputChange}/>
+                    <Textarea label={"Bio"} value={editedData.bio!} max={64} onChange={handleInputChange}/>
                 </div>
                 <div className={styles.Buttons}>
                     <button onClick={handleSave}>Save</button>

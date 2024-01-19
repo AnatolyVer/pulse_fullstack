@@ -1,11 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 import IUser from '../shared/interfaces/IUser';
 
-const initialUserState: IUser | null = null
+const initialUserState: Partial<IUser> | null = null
 
 const userSlice = createSlice({
     name: 'user',
-    initialState: null,
+    initialState: initialUserState,
     reducers: {
         setCurrentUser: (_state, action) => {
             return action.payload;

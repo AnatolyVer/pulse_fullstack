@@ -5,6 +5,8 @@ export default class userDto{
     bio
     chats
     _id
+    online
+    last_seen
     constructor(user) {
         this._id = user._id
         this.nickname = user.nickname
@@ -12,5 +14,7 @@ export default class userDto{
         this.avatar_url = user.avatar_url
         this.bio = user.bio
         this.chats = user.chats
+        this.online = user.online
+        this.last_seen = user.last_seen
     }
 }

@@ -1,10 +1,16 @@
 import dayjs from "dayjs"
 
-import {Avatar} from "@mui/material";
-
 import styles from './styles.module.scss'
+import {IChat} from "@shared/interfaces/IChat.ts";
+import CustomAvatar from "@components/CustomAvatar/CustomAvatar.tsx";
+import {openChat} from "@redux/chatSlice.ts";
+import {useDispatch} from "react-redux";
 
-const Chat = ({chat}:any) => {
+const Chat = ({chat}: {chat:IChat}) => {
+
+    const dispatch  = useDispatch()
+
+    console.log(chat)
 
     const cutTheMessage = (message: string) => {
         if (message.length <= 30) return message;
@@ -17,17 +23,17 @@ const Chat = ({chat}:any) => {
     }
 
     return (
-        <div className={styles.Chat}>
+        <div onClick={() => dispatch(openChat(chat))} className={styles.Chat}>
            <div className={styles.Main}>
-               <Avatar sx={{width:"60px", height:"60px"}} alt={"A"}/>
+               <CustomAvatar sx={{width:"60px", height:"60px"}} src={chat.user?.avatar_url} alt={chat.user?.nickname}/>
                <div className={styles.Message}>
-                   <p>{chat}</p>
+                   <p>{chat.user?.nickname}</p>
                    <p>{cutTheMessage("Message")}</p>
                </div>
            </div>
             <div className={styles.Info}>
                 <p>{dayjs().format("HH:mm")}</p>
-                <div className={styles.UnreadMessages}>{unreadMessagesToString(chat)}</div>
+                <div className={styles.UnreadMessages}>{unreadMessagesToString(2)}</div>
             </div>
         </div>
 

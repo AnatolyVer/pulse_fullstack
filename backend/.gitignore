@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 *.env
+pulse-410414-488f512f415a.json
 
 # Editor directories and files
 .vscode/*

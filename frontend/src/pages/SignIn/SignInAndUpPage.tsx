@@ -61,10 +61,16 @@ const SignInAndUpPage = ({link}:{link:"sign_up" | "sign_in"}) => {
         <div className={styles.FormWrapper}>
             <Logo size='big'/>
             <form onSubmit={handleSubmit}>
-                {isSignUpPage && <Input label="Nickname" type="text" value={formData.nickname} onChange={handleInputChange}/> }
+                {isSignUpPage && (<>
+                    <Input label="Nickname" type="text" value={formData.nickname} onChange={handleInputChange}/> <br/>
+                </>)}
                 <Input label="Username" type="text" value={formData.username} onChange={handleInputChange}/>
+                <br/>
                 <Input label="Password" type="password" value={formData.password} onChange={handleInputChange}/>
-                {isSignUpPage && <Input label="Confirm" type="password" value={formData.confirm} onChange={handleInputChange}/>}
+                <br/>
+                {isSignUpPage && (<>
+                    <Input label="Confirm" type="password" value={formData.confirm} onChange={handleInputChange}/> <br/>
+                </>)}
                 {<SubmitButton isSignUpPage={isSignUpPage} />}
             </form>
             {<LinkButton isSignUpPage={isSignUpPage} onClick={() => setFormData(defaultFormData)}/>}

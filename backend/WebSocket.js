@@ -21,8 +21,6 @@ class WebSocketManager {
         this.clients[_id] = socket
         await User.findOneAndUpdate({_id}, { $set: { online: true } })
 
-        console.log('Connection is opened');
-
         socket.on(EVENT_MESSAGE, async (message) => {
             console.log(JSON.parse(message))
           /*  const { type, payload } = JSON.parse(message)
@@ -58,9 +56,8 @@ class WebSocketManager {
     async closeSocket(socket) {
         for (const key in this.clients) {
             if (this.clients[key] === socket) {
-                await User.findOneAndUpdate({_id:key}, { $set: { online: false } })
+                await User.findOneAndUpdate({_id:key}, { $set: { online: false, last_seen: new Date()}})
                 delete this.clients[key];
-                console.log('Connection is closed');
                 return;
             }
         }

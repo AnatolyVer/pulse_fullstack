@@ -6,7 +6,7 @@ import classes from './styles.module.scss'
 import {IAvatarHook} from "@shared/interfaces/IAvatar.ts";
 import {Crop} from "react-image-crop";
 import useLoader from "@components/Loader/useLoader.ts";
-import Avatar from '@components/Avatar';
+import Avatar from '@components/CustomAvatar/CustomAvatar.tsx';
 
 interface AvatarUploaderProps{
     avatar:IAvatarHook,

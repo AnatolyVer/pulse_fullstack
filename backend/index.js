@@ -8,6 +8,7 @@ import dotenv from 'dotenv'
 
 import WebSocketManager from './WebSocket.js';
 import userRouter from "./routes/users.js";
+import chatRouter from "./routes/chat.js";
 
 /*-------------------------- SETTINGS -------------------------*/
 
@@ -39,6 +40,8 @@ app.use((req, res, next) => {
 /*-------------------------- ROUTING --------------------------*/
 
 app.use('/user', userRouter)
+app.use('/chat', chatRouter)
+
 
 /*-------------------------- RUNNING SERVER --------------------------*/
 

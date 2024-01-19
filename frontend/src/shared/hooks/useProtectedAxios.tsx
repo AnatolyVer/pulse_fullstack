@@ -5,6 +5,8 @@ import Cookies from "js-cookie";
 
 import {clearCurrentUser} from "@redux/userSlice.ts";
 import useLoader from "@components/Loader/useLoader.ts";
+import {closeChat} from "@redux/chatSlice.ts";
+import {clearChats} from "@redux/chatListSlice.ts";
 
 const useProtectedAxios = ():[(requestFunction: () => AxiosPromise) => Promise<AxiosPromise | undefined>, () => Promise<void> ] => {
     const dispatch = useDispatch();
@@ -15,6 +17,7 @@ const useProtectedAxios = ():[(requestFunction: () => AxiosPromise) => Promise<A
         try {
             return await requestFunction();
         } catch (e: any) {
+            console.log(e)
             switch (e.response.status) {
                 case 403:
                     Cookies.set('access-token', e.response.headers['access-token'], {expires: 30})
@@ -41,6 +44,8 @@ const useProtectedAxios = ():[(requestFunction: () => AxiosPromise) => Promise<A
             Cookies.remove('refresh-token')
             localStorage.removeItem("id")
             dispatch(clearCurrentUser())
+            dispatch(closeChat())
+            dispatch(clearChats())
             nav("/sign_in")
         }).catch((e) => console.error(e))
             .finally(() => closeLoader())
