@@ -18,7 +18,7 @@ const ChatList = () => {
                     return chat.type === "user" ? (
                         <User key={index} user={chat as IUser}/>
                     ) : (
-                        <Chat key={index} chat={chat}/>
+                        <Chat key={index} chat={chat as IChat}/>
                     )
                 })
             ) :  (

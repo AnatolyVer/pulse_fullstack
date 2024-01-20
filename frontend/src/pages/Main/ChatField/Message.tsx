@@ -11,14 +11,16 @@ const Message = ({message}:{message:TMessage}) => {
 
     const {_id} = useSelector((state: any) => state.user);
 
-    const justifyContent = _id === message.author ? "flex-end" : "flex-start"
+    const isIAuthor = _id === message.author
+
+    const justifyContent = isIAuthor ? "flex-end" : "flex-start"
 
     return (
         <div style={{justifyContent}} className={styles.Message}>
            <div className={styles.Data}>
                <p>{message.text}</p>
                <p>{message.time}</p>
-               {message.read ? (<DoneAllIcon/>) : (message.delivered ? (<DoneIcon/>) : (<CloseIcon/>)) }
+               {isIAuthor && (message.read ? (<DoneAllIcon/>) : (message.delivered ? (<DoneIcon/>) : (<CloseIcon/>)) )}
            </div>
         </div>
     );

@@ -61,7 +61,7 @@ export default class ChatService{
             if (_id !== "undefined"){
                 const chat = await Chat.findById(_id)
                 const text = CryptoService.encrypt(message.text)
-                chat.messages.push({...message, text})
+                chat.messages.push({...message, text, delivered:true})
                 await chat.save()
                 return {message: "Message sent"}
             }
