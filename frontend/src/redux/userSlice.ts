@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import IUser from '../shared/interfaces/IUser';
 
-const initialUserState: Partial<IUser> | null = null
+const initialUserState: Partial<IUser> = {}
 
 const userSlice = createSlice({
     name: 'user',

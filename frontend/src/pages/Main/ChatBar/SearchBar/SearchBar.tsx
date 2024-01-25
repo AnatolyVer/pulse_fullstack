@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import {useDispatch} from "react-redux";
 import debounce from 'lodash.debounce';
 
 import {getChats} from "@api/getChats.ts";
 import Input from '@components/Input/Input.tsx';
+import {loadChats} from "@redux/chatListSlice.ts";
 
 import styles from "./styles.module.scss";
-import {useDispatch} from "react-redux";
-import {loadChats} from "@redux/chatListSlice.ts";
 
 const SearchBar = () => {
 
@@ -14,15 +14,9 @@ const SearchBar = () => {
 
     const [inputValue, setInputValue] = useState<string>("");
 
-
-    const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setInputValue(e.target.value);
-    };
-
     const debouncedSearch = debounce(async (value: string) => {
         try {
             const chats = (await getChats(value)).data
-            console.log(chats)
             dispatch(loadChats(chats))
         }
         catch (e){
@@ -37,10 +31,9 @@ const SearchBar = () => {
         };
     }, [inputValue]);
 
-
     return (
         <div className={styles.SearchBar}>
-            <Input value={inputValue} onChange={handleSearchInputChange} label={"Search"} type={"search"}/>
+            <Input value={inputValue} onChange={(e) => setInputValue(e.target.value)} label={"Search"} type={"search"}/>
         </div>
     );
 };

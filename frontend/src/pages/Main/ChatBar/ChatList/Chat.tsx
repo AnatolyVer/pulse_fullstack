@@ -1,42 +1,49 @@
 import dayjs from "dayjs"
-
-import styles from './styles.module.scss'
-import {IChat} from "@shared/interfaces/IChat.ts";
+import {IPreviewChat} from "@shared/interfaces/IChat.ts";
 import CustomAvatar from "@components/CustomAvatar/CustomAvatar.tsx";
 import {openChat} from "@redux/chatSlice.ts";
-import {useDispatch} from "react-redux";
-import {IMessage} from "@shared/interfaces/IMessage.ts";
+import {useDispatch, useSelector} from "react-redux";
+import styles from './styles.module.scss'
+import {RootState} from "@redux/store.ts";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import DoneIcon from "@mui/icons-material/Done";
+import CloseIcon from "@mui/icons-material/Close";
+import useProtectedAxios from "@shared/hooks/useProtectedAxios.tsx";
+import {getChat} from "@api/getChat.ts";
 
-const Chat = ({chat}: {chat:IChat}) => {
+const Chat = ({chat}: {chat:IPreviewChat}) => {
 
     const dispatch  = useDispatch()
+    const [protectedAxiosRequest, ] = useProtectedAxios()
 
+    const {_id} = useSelector((state: RootState) => state.user);
 
-    const cutTheMessage = (message: IMessage):string => {
-        if (message){
-            if (message.text.length <= 30) return message.text;
-            else return message.text.substring(0, 30 - 3) + '...';
+    const isIAuthor = _id === chat.last_message.author
+
+    const handleClick = async () => {
+        try {
+            const res = await protectedAxiosRequest(() => getChat(chat._id!));
+            dispatch(openChat(res!.data))
+        }catch (e) {
+            console.log(e)
         }
-        else return ""
-    }
-
-    const unreadMessagesToString = (unreadMessages: number) =>{
-        if (unreadMessages > 99) return "+99"
-        return unreadMessages
     }
 
     return (
-        <div onClick={() => dispatch(openChat(chat))} className={styles.Chat}>
+        <div onClick={handleClick} className={styles.Chat}>
            <div className={styles.Main}>
-               <CustomAvatar sx={{width:"60px", height:"60px"}} src={chat.user?.avatar_url} alt={chat.user?.nickname}/>
-               <div className={styles.Message}>
-                   <p>{chat.user?.nickname}</p>
-                   <p>{cutTheMessage(chat.messages[chat.messages?.length - 1])}</p>
+               <CustomAvatar sx={{width:"60px", height:"60px"}} online={chat.online} src={chat.image} alt={chat.name}/>
+               <div className={styles.Data}>
+                   <p>{chat.name}</p>
+                   <div className={styles.Message}>
+                       <p>{chat.last_message.text}</p>
+                       {isIAuthor && (chat.last_message.read ? (<DoneAllIcon/>) : (chat.last_message.delivered ? (<DoneIcon/>) : (<CloseIcon/>)) )}
+                   </div>
                </div>
            </div>
             <div className={styles.Info}>
-                <p>{dayjs().format("HH:mm")}</p>
-                <div className={styles.UnreadMessages}>{unreadMessagesToString(chat.messages!.length)}</div>
+                <p>{dayjs(chat.last_message.time).format("HH:mm")}</p>
+                <div className={styles.UnreadMessages}>{chat.unread_messages}</div>
             </div>
         </div>
 

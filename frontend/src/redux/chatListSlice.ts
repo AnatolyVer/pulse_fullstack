@@ -1,8 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-import {IChat} from "@shared/interfaces/IChat.ts";
-import IUser from "@shared/interfaces/IUser.ts";
+import {IPreviewChat} from "@shared/interfaces/IChat.ts";
 
-const initialState: Array<IChat | IUser> = []
+const initialState: Array<IPreviewChat> = []
 
 const chatSlice = createSlice({
     name: 'chatList',
@@ -18,12 +17,22 @@ const chatSlice = createSlice({
         clearChats: () => {
           return initialState
         },
+        changeLastMessage: (state, action) => {
+            const { chat_id, message } = action.payload;
+            const updatedChat = state.find((chat: IPreviewChat) => chat?._id === chat_id);
+            if (updatedChat) {
+                updatedChat.last_message = message
+            }
+            return state;
+        }
+
     },
 });
 
 export const {
     loadChats,
     addChat,
-    clearChats
+    clearChats,
+    changeLastMessage
 } = chatSlice.actions;
 export default chatSlice.reducer;

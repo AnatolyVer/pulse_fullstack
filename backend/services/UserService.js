@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import {Storage} from '@google-cloud/storage'
 
 import User from '../models/user.js'
-import userDto from "../dto/userDto.js";
+import {userDto} from "../dto/userDto.js";
 import TokenService from "./tokenService.js";
 
 dotenv.config()

@@ -15,7 +15,7 @@ const Header = () => {
     const socket = useWebSocket()
 
     useEffect(() => {
-        if (user) socket.connect(user._id)
+        if (Object.keys(user).length) socket.connect(user._id)
         else socket.close()
     }, [user]);
 

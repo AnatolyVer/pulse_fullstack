@@ -7,7 +7,7 @@ import Input from "@components/Input/Input";
 import React, {useState} from "react";
 import useSnackBar from "@components/SnackBar/useSnackBar.tsx";
 import useProtectedAxios from "@shared/hooks/useProtectedAxios.tsx";
-import {addMessage, openChat} from "@redux/chatSlice.ts";
+import {addMessage as addMessageToCurrentChat, openChat} from "@redux/chatSlice.ts";
 import {sendMessage} from "@api/sendMessage.ts";
 import {TMessage} from "@shared/interfaces/TMessage.ts";
 import dayjs from "dayjs";
@@ -17,6 +17,7 @@ import MessageList from "@pages/Main/ChatField/MessageList.tsx";
 import SendIcon from '@mui/icons-material/Send';
 import { createChat } from "@api/createChat";
 import {RootState} from "@redux/store.ts";
+import {changeLastMessage} from "@redux/chatListSlice.ts";
 const ChatField = () => {
 
     const chat = useSelector((state: RootState) => state.chat);
@@ -36,7 +37,7 @@ const ChatField = () => {
                 const messageToSend:TMessage = {
                     author: user?.['_id']!,
                     text:(event.target as any).elements[0].value,
-                    time:dayjs().format("HH:mm"),
+                    time:dayjs().toString(),
                     delivered:false,
                     read:false
                 }
@@ -44,11 +45,11 @@ const ChatField = () => {
                 if (message === "Create new chat"){
                     const res = await protectedAxiosRequest(() => createChat([user?.['_id']!, chat.user?._id!]))
                     dispatch(openChat(res!.data))
-                    console.log(res!.data)
                     await protectedAxiosRequest(() => sendMessage(messageToSend, res!.data._id!))
                 }
                 messageToSend.delivered = true
-                dispatch(addMessage(messageToSend))
+                dispatch(addMessageToCurrentChat(messageToSend))
+                dispatch(changeLastMessage({chat_id: chat._id, message: messageToSend}))
                 setMessage("")
             }
         }
@@ -68,7 +69,7 @@ const ChatField = () => {
                         <p>{chat.user.online ? "online" : convertDate(chat.user.last_seen!)}</p>
                     </div>
                 </div>
-                <MessageList messages={chat.messages}/>
+                <MessageList messages={chat.messages!}/>
                 <div className={styles.ChatInput}>
                     <form onSubmit={onSubmit}>
                         <Input value={message} onChange={(e) => setMessage(e.target.value)} type={"text"} label={""}/>

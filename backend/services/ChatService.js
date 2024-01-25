@@ -1,75 +1,91 @@
+import {CryptoService} from "./cryptoService.js";
+
 import User from "../models/user.js";
 import Chat from "../models/chat.js";
-import userDto from "../dto/userDto.js";
+
 import chatDto from "../dto/chatDto.js";
-import {CryptoService} from "./cryptoService.js";
+
+import {ws} from "../index.js"
+import {PreviewChat} from "../dto/previewChat.js";
+import {PublicUserDto} from "../dto/userDto.js";
 
 export default class ChatService{
 
-    static async getAll(_id, substr){
+    static cutTheMessage (message){
+        if (message){
+            if (message.text.length > 30) message.text = message.text.substring(0, 30 - 3) + '...';
+            return message
+        }
+        else return {}
+
+    }
+
+    static unreadMessagesToString = (unreadMessages) => unreadMessages > 99 ? "+99" : unreadMessages
+
+    static #createPreviewChat (chat, user_id) {
+        switch (chat.type) {
+            case "chat":
+                return new PreviewChat(chat, user_id)
+            case "channel":
+                break;
+        }
+    }
+
+    static async getAllPreviewChats(_id, substr){
         try {
             const user = await User.findById(_id)
             const chatsToSend = []
             for (const chat_id of user.chats){
                 let chat = await this.getOne(_id, chat_id)
                 if (substr !== ""){
-                    if (chat.user.nickname.toLowerCase().includes(substr.toLowerCase())){
-                        const messages = []
-                        for (const message of chat.messages){
-                            const text = CryptoService.decrypt(message.text)
-                            messages.push({...message, text})
-                            chat = {...chat, messages}
-                        }
-                        chatsToSend.push(chat)
-                    }
+                    if (chat.user.nickname.toLowerCase().includes(substr.toLowerCase()))
+                        chatsToSend.push(this.#createPreviewChat(chat, _id))
                 }
-                else {
-                    const messages = []
-                    for (const message of chat.messages){
-                        const text = CryptoService.decrypt(message.text)
-                        messages.push({...message, text})
-                        chat = {...chat, messages}
-                    }
-                    chatsToSend.push(chat)
-                }
+                else chatsToSend.push(this.#createPreviewChat(chat, _id))
             }
             return chatsToSend
         } catch (e) {
-            throw new Error(e.message);
+            throw new Error(e);
         }
     }
 
     static async getOne(user_id, _id) {
         try {
             const chat = await Chat.findById(_id)
-            let chatToSend = {}
+            const members = []
             for (const member_id of chat.members) {
-                if (member_id.toString() !== user_id.toString()){
-                    const member = await User.findById(member_id)
-                    const chatDTO = new chatDto(chat)
-                    chatToSend = {...chatDTO, user:new userDto(member), type:"chat"}
-                }
+                const member = await User.findById(member_id)
+                const memberToPush = new PublicUserDto(member)
+                members.push(memberToPush)
             }
-            return chatToSend
+            return new chatDto(chat, members)
         }catch (e){
-            throw new Error(e.message)
+            throw new Error(e)
         }
     }
 
-    static async sendMessage(_id, message) {
+    static async sendMessage(sender, chat_id, message) {
         try {
-            if (_id !== "undefined"){
-                const chat = await Chat.findById(_id)
+            if (chat_id !== "undefined"){
+                const chat = await Chat.findById(chat_id)
                 const text = CryptoService.encrypt(message.text)
                 chat.messages.push({...message, text, delivered:true})
+
                 await chat.save()
+
+                for (const member_id of chat.members) {
+                    if (member_id.toString() !== sender.toString()){
+                        ws.sendMessage(member_id, {body: {message, chat_id}, type:"NEW_MESSAGE"})
+                    }
+                }
+
                 return {message: "Message sent"}
             }
             else{
                 return {message: "Create new chat"}
             }
         }catch (e) {
-            console.log(e.message)
+            console.log(e)
             throw new Error("Chat not found")
         }
     }

@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import chatService from "../services/ChatService.js";
+import {FullChat} from "../dto/previewChat.js";
+
 
 export default class ChatController {
 
@@ -7,7 +9,7 @@ export default class ChatController {
         try {
             const {_id} = jwt.decode(req.headers['refresh-token'])
             const {substr} = req.query
-            const chats = await chatService.getAll(_id, substr)
+            const chats = await chatService.getAllPreviewChats(_id, substr)
             res.status(200).json(chats)
         } catch (err) {
             console.error(err);
@@ -16,14 +18,15 @@ export default class ChatController {
         return res
     }
 
-
     static async getOne(req, res) {
         try{
             const {_id} = jwt.decode(req.headers['refresh-token'])
-            const {username} = req.query
-            const chat = await chatService.getOne(_id, username)
-            return res.status(200).json(chat)
+            const {chat_id} = req.params
+            const chat = await chatService.getOne(_id, chat_id)
+            const fullChat = new FullChat(chat, _id)
+            return res.status(200).json(fullChat)
         }catch (e) {
+            console.log(e)
             res.status(500).end(e.message)
         }
         return res
@@ -31,9 +34,10 @@ export default class ChatController {
 
     static async sendMessage(req, res) {
         try{
+            const sender = jwt.decode(req.headers['refresh-token'])._id
             const message = req.body
-            const {_id} = req.query
-            const result = await chatService.sendMessage(_id, message)
+            const chat_id = req.query._id
+            const result = await chatService.sendMessage(sender, chat_id, message)
             return res.status(200).json(result)
         }catch (e) {
             res.status(500).end(e.message)

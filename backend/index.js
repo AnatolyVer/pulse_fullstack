@@ -45,7 +45,7 @@ app.use('/chat', chatRouter)
 
 /*-------------------------- RUNNING SERVER --------------------------*/
 
-new WebSocketManager(server);
+export const ws = new WebSocketManager(server);
 
 try {
   server.listen(PORT, () => {

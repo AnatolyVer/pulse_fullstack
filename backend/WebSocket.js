@@ -39,6 +39,11 @@ class WebSocketManager {
         socket.on(EVENT_CLOSE, () => this.closeSocket(socket));
     }
 
+    sendMessage(_id, message) {
+        if (this.clients[_id])
+        this.clients[_id].send(JSON.stringify(message));
+    }
+
     parseRequestParameters(url){
         const [, id] = url.split('&')[0].split('=');
         return id;

@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {IChat} from "@shared/interfaces/IChat.ts";
 
-const initialState: IChat = {}
+const initialState: Partial<IChat> = {}
 
 const chatSlice = createSlice({
     name: 'chat',
@@ -14,7 +14,7 @@ const chatSlice = createSlice({
             return initialState;
         },
         addMessage: (state, action) => {
-            state.messages.push(action.payload)
+            state.messages!.push(action.payload)
             return state
         }
     },

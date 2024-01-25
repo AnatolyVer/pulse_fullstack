@@ -1,27 +1,19 @@
+import { useSelector } from "react-redux";
+import { RootState } from "@redux/store.ts";
 import Chat from "./Chat.tsx";
+import {IPreviewChat} from "@shared/interfaces/IChat.ts";
 
-import styles from './styles.module.scss'
-import User from "@pages/Main/ChatBar/ChatList/User.tsx";
-import {useSelector} from "react-redux";
-import {RootState} from "@redux/store.ts";
-import {IChat} from "@shared/interfaces/IChat.ts";
-import IUser from "@shared/interfaces/IUser.ts";
+import styles from './styles.module.scss';
 
 const ChatList = () => {
 
-    const chats = useSelector((state : RootState) => state.chatList)
+    const chats = useSelector((state: RootState) => state.chatList);
 
     return (
         <div className={styles.ChatList}>
-            {chats && chats.length ? (
-                chats.map((chat:IChat | IUser, index) => {
-                    return chat.type === "user" ? (
-                        <User key={index} user={chat as IUser}/>
-                    ) : (
-                        <Chat key={index} chat={chat as IChat}/>
-                    )
-                })
-            ) :  (
+            {(chats &&chats.length) ? (
+                chats.map((chat: IPreviewChat) => <Chat key={chat._id} chat={chat} />)
+            ) : (
                 <h2>No chats found</h2>
             )}
         </div>
