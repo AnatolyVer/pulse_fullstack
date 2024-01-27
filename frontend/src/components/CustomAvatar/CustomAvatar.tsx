@@ -1,20 +1,18 @@
 import { useState } from 'react';
-
-import {stringAvatar} from "@components/CustomAvatar/colorBackground.ts";
-
-import { Avatar, AvatarProps, Skeleton, SxProps} from '@mui/material';
-import {StyledBadge} from "@components/CustomAvatar/StyledBadge.ts";
+import { stringAvatar } from "@components/CustomAvatar/colorBackground.ts";
+import { Avatar, AvatarProps, Skeleton} from '@mui/material';
+import { StyledBadge } from "@components/CustomAvatar/StyledBadge.ts";
 
 interface CustomAvatarProps extends AvatarProps {
-    sx?: SxProps<any> & { height?: string };
-    online?:boolean
-};
+    sx?: any; // Приведение к типу any
+    online?: boolean;
+    height?: string; // Добавляем опциональное свойство height
+}
 
-const CustomAvatar = ({sx, src, alt, online}: CustomAvatarProps) => {
+const CustomAvatar = ({ sx, src, alt, online }: CustomAvatarProps) => {
     const [isLoading, setIsLoading] = useState(true);
 
     const img = new Image();
-
     img.src = src!;
     img.onload = () => setIsLoading(false)
     img.onerror = () => setIsLoading(false)
@@ -29,11 +27,10 @@ const CustomAvatar = ({sx, src, alt, online}: CustomAvatarProps) => {
         </StyledBadge>
     ) : (
         <Avatar {...stringAvatar(alt!, sx!)} src={`${img.src}`} />
-
     )
 
     return isLoading ? (
-        <Skeleton variant="circular" sx={{...sx}} />
+        <Skeleton variant="circular" sx={{ ...sx }} />
     ) : (
         avatar
     );
