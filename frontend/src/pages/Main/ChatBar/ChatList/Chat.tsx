@@ -18,12 +18,17 @@ const Chat = ({chat}: {chat:IPreviewChat}) => {
 
     const {_id} = useSelector((state: RootState) => state.user);
 
-    const isIAuthor = _id === chat.last_message.author
+    const isIAuthor = chat.last_message && _id === chat.last_message.author
 
     const handleClick = async () => {
         try {
-            const res = await protectedAxiosRequest(() => getChat(chat._id!));
-            dispatch(openChat(res!.data))
+            if (chat._id){
+                const res = await protectedAxiosRequest(() => getChat(chat._id!));
+                dispatch(openChat(res!.data))
+            }
+            else {
+                dispatch(openChat({...chat, messages:[]}))
+            }
         }catch (e) {
             console.log(e)
         }
@@ -36,14 +41,22 @@ const Chat = ({chat}: {chat:IPreviewChat}) => {
                <div className={styles.Data}>
                    <p>{chat.name}</p>
                    <div className={styles.Message}>
-                       <p>{chat.last_message.text}</p>
-                       {isIAuthor && (chat.last_message.read ? (<DoneAllIcon/>) : (chat.last_message.delivered ? (<DoneIcon/>) : (<CloseIcon/>)) )}
+                       {chat.last_message && (
+                           <>
+                               <p>{chat.last_message.text}</p>
+                               {isIAuthor && (chat.last_message.read ? (<DoneAllIcon/>) : (chat.last_message.delivered ? (<DoneIcon/>) : (<CloseIcon/>)) )}
+                           </>
+                       )}
                    </div>
                </div>
            </div>
             <div className={styles.Info}>
-                <p>{dayjs(chat.last_message.time).format("HH:mm")}</p>
-                <div className={styles.UnreadMessages}>{chat.unread_messages}</div>
+                {chat.last_message && (
+                   <>
+                       <p>{dayjs(chat.last_message.time).format("HH:mm")}</p>
+                       <div className={styles.UnreadMessages}>{chat.unread_messages}</div>
+                   </>
+                )}
             </div>
         </div>
 

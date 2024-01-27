@@ -17,7 +17,8 @@ import MessageList from "@pages/Main/ChatField/MessageList.tsx";
 import SendIcon from '@mui/icons-material/Send';
 import { createChat } from "@api/createChat";
 import {RootState} from "@redux/store.ts";
-import {changeLastMessage} from "@redux/chatListSlice.ts";
+import {changeLastMessage, loadChats} from "@redux/chatListSlice.ts";
+import {getChats} from "@api/getChats.ts";
 const ChatField = () => {
 
     const chat = useSelector((state: RootState) => state.chat);
@@ -45,6 +46,8 @@ const ChatField = () => {
                 if (message === "Create new chat"){
                     const res = await protectedAxiosRequest(() => createChat([user?.['_id']!, chat.user?._id!]))
                     dispatch(openChat(res!.data))
+                    const chats = (await getChats("")).data
+                    dispatch(loadChats(chats))
                     await protectedAxiosRequest(() => sendMessage(messageToSend, res!.data._id!))
                 }
                 messageToSend.delivered = true

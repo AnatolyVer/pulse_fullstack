@@ -22,10 +22,10 @@ export default class ChatService{
 
     static unreadMessagesToString = (unreadMessages) => unreadMessages > 99 ? "+99" : unreadMessages
 
-    static #createPreviewChat (chat, user_id) {
+    static #createPreviewChat (chat, user_id, user) {
         switch (chat.type) {
             case "chat":
-                return new PreviewChat(chat, user_id)
+                return new PreviewChat(chat, user_id, user)
             case "channel":
                 break;
         }
@@ -33,13 +33,44 @@ export default class ChatService{
 
     static async getAllPreviewChats(_id, substr){
         try {
-            const user = await User.findById(_id)
+            const userChatsOwner = await User.findById(_id)
             const chatsToSend = []
-            for (const chat_id of user.chats){
+            const readChat = {}
+            for (const chat_id of userChatsOwner.chats){
                 let chat = await this.getOne(_id, chat_id)
-                if (substr !== ""){
-                    if (chat.user.nickname.toLowerCase().includes(substr.toLowerCase()))
-                        chatsToSend.push(this.#createPreviewChat(chat, _id))
+                if (substr.trim()){
+                    for (const member_id of chat.members){
+                        const member = await User.findById(member_id)
+                        if (member.nickname.toLowerCase().includes(substr.toLowerCase()) || member.username.toLowerCase().includes(substr.toLowerCase())){
+                            if (member.username !== userChatsOwner.username){
+                                chatsToSend.push(this.#createPreviewChat(chat, _id, member))
+                                readChat[member.username] = true
+                            }
+                        }
+                    }
+                    if (chatsToSend.length < 5){
+                        const users = await User.find({
+                            $or: [
+                                { nickname: { $regex: substr, $options: 'i' } },
+                                { username: { $regex: substr, $options: 'i' } }
+                            ]
+                        })
+                        for (const user of users){
+                            if (!readChat[user.username]){
+                                if (user.username !== userChatsOwner.username){
+                                    const unknownChat = {
+                                        _id:undefined,
+                                        type:"chat",
+                                        members:[user, userChatsOwner],
+                                        messages:[]
+                                    }
+                                    chatsToSend.push(this.#createPreviewChat(unknownChat, _id, user))
+                                    readChat[user.username] = true
+                                }
+                            }
+                        }
+                    }
+
                 }
                 else chatsToSend.push(this.#createPreviewChat(chat, _id))
             }

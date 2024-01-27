@@ -50,7 +50,8 @@ export default class ChatController {
             const users_id = req.body
             const {_id} = jwt.decode(req.headers['refresh-token'])
             const chat = await chatService.create(_id, users_id)
-            return res.status(200).json(chat)
+            const fullChat = new FullChat(chat, _id)
+            return res.status(200).json(fullChat)
         }catch (e) {
             res.status(500).end(e.message)
         }

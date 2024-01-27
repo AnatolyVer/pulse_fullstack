@@ -7,8 +7,9 @@ export interface IPreviewChat{
     name:string,
     type:string,
     online:boolean,
-    last_message:Partial<IMessage>,
-    unread_messages:string,
+    last_message?:Partial<IMessage>,
+    unread_messages?:string,
+    user:Partial<IUser>
 }
 
 export interface IChat{
