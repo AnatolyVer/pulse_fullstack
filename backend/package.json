@@ -2,7 +2,7 @@
   "name": "pulse-nodejs",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "start": "node index.js",
     "dev": "set NODE_ENV=development&& nodemon index.js"
