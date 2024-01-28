@@ -1,4 +1,5 @@
-import mongoose, {Schema} from "mongoose"
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
 const userSchema = new Schema({
     messages:{
@@ -15,4 +16,4 @@ const userSchema = new Schema({
     }
 });
 
-export default mongoose.model('chat', userSchema)
+module.exports =  mongoose.model('chat', userSchema)

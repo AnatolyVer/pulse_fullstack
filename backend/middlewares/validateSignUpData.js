@@ -1,7 +1,7 @@
-import User from "../models/user.js";
-import { check, validationResult } from 'express-validator';
+const { check, validationResult } = require('express-validator');
+const User = require("../models/user.js");
 
-export const validateSignUpData = async (req, res, next) => {
+module.exports = validateSignUpData = async (req, res, next) => {
     try {
         await Promise.all([
             check('nickname').notEmpty().withMessage('Nickname is required').run(req),

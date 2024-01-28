@@ -1,4 +1,11 @@
-export { validateSignUpData } from './validateSignUpData.js';
-export { validateSignInData } from './validateSignInData.js';
-export {validateTokens} from "./validateTokens.js";
-export { validateEditProfileData } from './validateEditProfileData.js';
+const validateSignUpData = require('./validateSignUpData.js');
+const validateSignInData = require('./validateSignInData.js');
+const validateTokens = require("./validateTokens.js");
+const validateEditProfileData = require('./validateEditProfileData.js');
+
+module.exports = {
+    validateSignUpData,
+    validateSignInData,
+    validateTokens,
+    validateEditProfileData
+};

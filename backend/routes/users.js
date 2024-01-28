@@ -1,10 +1,9 @@
-import { Router } from "express";
-import multer from 'multer'
+const { Router } = require("express");
+const multer = require('multer')
 
-import UserController from "../controllers/UserController.js";
+const UserController = require("../controllers/UserController.js");
 
-import {validateSignUpData, validateSignInData, validateTokens, validateEditProfileData} from "../middlewares/index.js";
-
+const {validateSignUpData, validateSignInData, validateTokens, validateEditProfileData} = require("../middlewares/index.js");
 
 const upload = multer();
 const userRouter = Router()
@@ -19,4 +18,4 @@ userRouter.post('/set_avatar', upload.single('image'), UserController.setAvatar)
 
 userRouter.put('/update', validateTokens, validateEditProfileData , UserController.updateUser)
 
-export default userRouter
+module.exports = userRouter

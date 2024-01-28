@@ -1,11 +1,11 @@
-import {WebSocketServer} from "ws"
+const {WebSocketServer} = require ("ws")
 
-import User from "./models/user.js";
+const User = require ("./models/user.js");
 const EVENT_CONNECTION = 'connection';
 const EVENT_MESSAGE = 'message';
 const EVENT_CLOSE = 'close';
 
-class WebSocketManager {
+module.exports = class WebSocketManager {
 
     wss
     clients
@@ -70,4 +70,3 @@ class WebSocketManager {
     }
 }
 
-export default WebSocketManager;

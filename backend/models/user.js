@@ -1,42 +1,43 @@
-import mongoose, {Schema} from "mongoose"
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
 const userSchema = new Schema({
-    nickname:{
+    nickname: {
         type: String,
-        required:true
+        required: true
     },
-    username:{
+    username: {
         type: String,
-        required:true,
-        unique:true
+        required: true,
+        unique: true
     },
     password: {
         type: String,
         required: true
     },
-    avatar_url:{
+    avatar_url: {
         type: String,
         default: ''
     },
-    bio:{
+    bio: {
         type: String,
         default: ''
     },
-    sessions:{
+    sessions: {
         type: [Object],
-        default:[]
+        default: []
     },
-    chats:{
-        type:[String],
-        default:[]
+    chats: {
+        type: [String],
+        default: []
     },
-    online:{
-        type:Boolean,
-        default:false
+    online: {
+        type: Boolean,
+        default: false
     },
-    last_seen:{
-        type:Date
+    last_seen: {
+        type: Date
     }
 });
 
-export default mongoose.model('user', userSchema)
+module.exports = mongoose.model('user', userSchema);

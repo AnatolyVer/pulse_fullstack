@@ -1,6 +1,6 @@
-import jwt from 'jsonwebtoken'
+const jwt = require('jsonwebtoken')
 
-export default class TokenService{
+module.exports = class TokenService{
 
     static async generateTokens(user){
         const {_id, username, nickname} = user

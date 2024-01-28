@@ -1,8 +1,8 @@
-import jwt from "jsonwebtoken";
-import chatService from "../services/ChatService.js";
-import {FullChat} from "../dto/previewChat.js";
+const jwt = require("jsonwebtoken");
+const chatService = require("../services/ChatService.js");
+const {FullChat} = require("../dto/previewChat.js");
 
-export default class ChatController {
+module.exports = class ChatController {
 
     static async getAll(req, res) {
         try {

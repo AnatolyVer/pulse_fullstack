@@ -1,6 +1,6 @@
-import ChatService from "../services/ChatService.js";
+const ChatService = require("../services/ChatService.js");
 
-export class PreviewChat{
+class PreviewChat{
     _id
     type
     image
@@ -32,7 +32,7 @@ export class PreviewChat{
     }
 }
 
-export class FullChat{
+class FullChat{
     _id
     messages
     user
@@ -51,4 +51,8 @@ export class FullChat{
 
         this.unread_messages = ChatService.unreadMessagesToString(chat.messages.length)
     }
+}
+
+module.exports = {
+    PreviewChat, FullChat
 }

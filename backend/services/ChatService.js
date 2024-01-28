@@ -1,15 +1,15 @@
-import {CryptoService} from "./cryptoService.js";
+const {CryptoService} = require("./cryptoService.js");
 
-import User from "../models/user.js";
-import Chat from "../models/chat.js";
+const User = require("../models/user.js");
+const Chat = require("../models/chat.js");
 
-import chatDto from "../dto/chatDto.js";
+const chatDto = require("../dto/chatDto.js");
 
-import {ws} from "../index.js"
-import {PreviewChat} from "../dto/previewChat.js";
-import {PublicUserDto} from "../dto/userDto.js";
+const ws = require("../index.js")
+const {PreviewChat} = require("../dto/previewChat.js");
+const {PublicUserDto} = require("../dto/userDto.js");
 
-export default class ChatService{
+module.exports = class ChatService{
 
     static cutTheMessage (message){
         if (message){

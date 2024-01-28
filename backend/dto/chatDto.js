@@ -1,7 +1,7 @@
-import {CryptoService} from "../services/cryptoService.js";
+const {CryptoService} = require("../services/cryptoService.js");
 
 
-export default class chatDto{
+module.exports =  class chatDto{
     _id
     messages
     members
