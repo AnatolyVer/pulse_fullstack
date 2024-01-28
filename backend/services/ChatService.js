@@ -17,7 +17,6 @@ export default class ChatService{
             return message
         }
         else return {}
-
     }
 
     static unreadMessagesToString = (unreadMessages) => unreadMessages > 99 ? "+99" : unreadMessages
