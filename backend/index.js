@@ -1,11 +1,10 @@
 import express from 'express'
 
-const mongoose = require('mongoose');
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
-
-const http = require('http');
-const dotenv = require('dotenv');
+import mongoose from 'mongoose'
+import cors from 'cors'
+import cookieParser from 'cookie-parser'
+import http from "http";
+import dotenv from 'dotenv'
 
 import WebSocketManager from './WebSocket.js';
 import userRouter from "./routes/users.js";

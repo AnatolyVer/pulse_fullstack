@@ -1,4 +1,5 @@
-import { WebSocketServer} from 'ws';
+import {WebSocketServer} from "ws"
+
 import User from "./models/user.js";
 const EVENT_CONNECTION = 'connection';
 const EVENT_MESSAGE = 'message';

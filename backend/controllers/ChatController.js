@@ -2,7 +2,6 @@ import jwt from "jsonwebtoken";
 import chatService from "../services/ChatService.js";
 import {FullChat} from "../dto/previewChat.js";
 
-
 export default class ChatController {
 
     static async getAll(req, res) {
