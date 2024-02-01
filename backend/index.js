@@ -42,6 +42,10 @@ app.use('/user', userRouter)
 app.use('/chat', chatRouter)
 
 
+app.get("/check", (req, res) => {
+  res.status(200).send("Working")
+})
+
 /*-------------------------- RUNNING SERVER --------------------------*/
 
 module.exports = ws = new WebSocketManager(server);
