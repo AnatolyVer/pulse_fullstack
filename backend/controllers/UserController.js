@@ -21,7 +21,7 @@ module.exports = class UserController {
     static async signIn(req, res) {
         try{
             const user = req.body
-            const {accessToken, refreshToken, _id} = await userService.logUser(user, res)
+            const {accessToken, refreshToken, _id} = await userService.logUser(user)
             res.setHeader('access-token', accessToken);
             res.setHeader('refresh-token', refreshToken);
             res.status(200).json(_id)

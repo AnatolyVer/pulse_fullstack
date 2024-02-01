@@ -36,7 +36,7 @@ module.exports =  class UserService {
 
     static async logUser({username}) {
         try{
-            const user = await User.findOne({ username });
+            const user = await User.findOne({username});
             const {accessToken, refreshToken} = await TokenService.generateTokens(user)
             user.sessions.push({accessToken, refreshToken})
             await user.save()
