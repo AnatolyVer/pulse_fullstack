@@ -1,9 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import {IUserSign} from "@shared/interfaces/IUserSign.ts";
-import dotenv from "dotenv"
-
-dotenv.config()
 
 export const signUser = async (link: string, formData: IUserSign) => {
     try {
