@@ -2,7 +2,6 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 export const uploadAvatar = async (avatar: File) => {
-
     const formData = new FormData();
     formData.append('image', avatar);
 
