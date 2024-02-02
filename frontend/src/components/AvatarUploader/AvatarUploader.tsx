@@ -1,4 +1,4 @@
-import React, {useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import CropModal from '@components/CropModal/CropModal';
 import EditIcon from '@mui/icons-material/Edit';
@@ -10,14 +10,19 @@ import Avatar from '@components/CustomAvatar/CustomAvatar.tsx';
 
 interface AvatarUploaderProps{
     avatar:IAvatarHook,
+    alt: string
 }
 
-function AvatarUploader ({avatar}:AvatarUploaderProps){
+function AvatarUploader ({avatar, alt}:AvatarUploaderProps){
 
     const [open, setOpen] = useState<boolean>(false)
     const [crop, setCrop] = useState<Crop>()
 
     const [openLoader,] = useLoader()
+
+    useEffect(() => {
+        console.log(avatar)
+    }, []);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const reader = new FileReader();
@@ -40,7 +45,7 @@ function AvatarUploader ({avatar}:AvatarUploaderProps){
     return (
         <div className={classes.AvatarUploader}>
             <label htmlFor="avatar">
-                <Avatar src={`${avatar.avatar.previewPhoto}`} sx={{width: 90, height: 90, cursor:'pointer' }}/>
+                <Avatar src={`${avatar.avatar.previewPhoto}`} sx={{width: 90, height: 90, cursor:'pointer'}} alt={alt}/>
             </label>
             <input hidden key={Date.now()} type="file" id="avatar" name="avatar" onChange={(e)=> handleImageChange(e)} />
             <CloseIcon sx={{position:"absolute", left:-10, top:0, cursor:'pointer', display:display}} onClick={avatar.setDefaultImage}/>

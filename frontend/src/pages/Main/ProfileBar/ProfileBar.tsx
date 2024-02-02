@@ -1,12 +1,15 @@
 import {useState} from "react";
 
 import EditProfileModal from "@components/EditProfileModal/EditProfileModal.tsx";
-import IUser from '@shared/interfaces/IUser.ts';
 
 import styles from './styles.module.scss'
 import Avatar from "@components/CustomAvatar/CustomAvatar.tsx";
+import {useSelector} from "react-redux";
+import {RootState} from "@redux/store.ts";
 
-const ProfileBar = ({ user }: { user: IUser }) => {
+const ProfileBar = () => {
+
+    const user = useSelector((state: RootState)  => state.user)
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 

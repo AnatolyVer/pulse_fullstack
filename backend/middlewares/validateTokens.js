@@ -1,8 +1,8 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/user.js");
-const tokenService = require("../services/tokenService.js");
+import jwt from "jsonwebtoken";
+import User from "../models/user.js";
+import tokenService from "../services/tokenService.js";
 
-module.exports = validateTokens = async (req, res, next) => {
+export const validateTokens = async (req, res, next) => {
     try {
         const accessToken = req.headers['access-token'];
         const refreshToken = req.headers['refresh-token'];

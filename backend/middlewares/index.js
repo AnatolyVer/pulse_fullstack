@@ -1,9 +1,9 @@
-const validateSignUpData = require('./validateSignUpData.js');
-const validateSignInData = require('./validateSignInData.js');
-const validateTokens = require("./validateTokens.js");
-const validateEditProfileData = require('./validateEditProfileData.js');
+import {validateSignUpData} from './validateSignUpData.js';
+import {validateSignInData} from './validateSignInData.js';
+import {validateTokens} from './validateTokens.js';
+import {validateEditProfileData} from './validateEditProfileData.js';
 
-module.exports = {
+export {
     validateSignUpData,
     validateSignInData,
     validateTokens,

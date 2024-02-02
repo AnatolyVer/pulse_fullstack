@@ -1,5 +1,5 @@
-const crypto = require('crypto');
-const dotenv = require('dotenv');
+import crypto from 'crypto';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -9,7 +9,7 @@ const ivHex = process.env.IV;
 const key = Buffer.from(keyHex, 'hex');
 const iv = Buffer.from(ivHex, 'hex');
 
-module.exports = class CryptoService {
+export default class CryptoService {
     static encrypt(text) {
         const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
         let encrypted = cipher.update(text, 'utf-8', 'hex');

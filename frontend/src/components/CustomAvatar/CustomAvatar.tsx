@@ -4,9 +4,9 @@ import { Avatar, AvatarProps, Skeleton} from '@mui/material';
 import { StyledBadge } from "@components/CustomAvatar/StyledBadge.ts";
 
 interface CustomAvatarProps extends AvatarProps {
-    sx?: any; // Приведение к типу any
+    sx?: any;
     online?: boolean;
-    height?: string; // Добавляем опциональное свойство height
+    height?: string;
 }
 
 const CustomAvatar = ({ sx, src, alt, online }: CustomAvatarProps) => {

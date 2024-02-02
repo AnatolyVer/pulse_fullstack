@@ -1,9 +1,8 @@
-const { check, validationResult } = require('express-validator');
+import { check, validationResult } from 'express-validator';
+import User from "../models/user.js";
+import bcrypt from "bcrypt";
 
-const User = require("../models/user.js");
-const bcrypt = require("bcrypt");
-
-module.exports = validateSignInData = async (req, res, next) => {
+export const validateSignInData = async (req, res, next) => {
     try {
         await Promise.all([
             check('username').notEmpty().withMessage('Username is required').run(req),

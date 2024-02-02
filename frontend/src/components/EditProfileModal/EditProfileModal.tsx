@@ -29,6 +29,7 @@ const EditProfileModal = ({ isOpen, onClose, userData }:EditProfileModalProps) =
     const [openSnackBar, closeSnackBar] =  useSnackBar()
     const [openLoader, closeLoader] = useLoader()
     const [protectedAxiosRequest,] = useProtectedAxios()
+
     const avatar:IAvatarHook = useAvatarUploading(userData.avatar_url)
 
     useEffect(() => {
@@ -53,28 +54,30 @@ const EditProfileModal = ({ isOpen, onClose, userData }:EditProfileModalProps) =
     const handleSave = async () => {
         openLoader()
         try {
-            const userToSend:Partial<IUser> = {};
+            const userToSend: Partial<IUser> = {};
             for (let key in editedData) {
                 if (userData[key] !== editedData[key]) {
                     userToSend[key] = editedData[key];
                 }
             }
 
-            if (avatar.avatar.fileToUpload != null){
+            if (avatar.avatar.fileToUpload != null) {
                 userToSend.avatar_url = (await protectedAxiosRequest(() => uploadAvatar(avatar.avatar.fileToUpload!)))!.data
             }
 
-            if (Object.keys(userToSend).length > 0) {
-                await protectedAxiosRequest(() => updateUser(userToSend));
+            if (Object.keys(userToSend).length === 0) {
+                return;
             }
 
+            await protectedAxiosRequest(() => updateUser(userToSend));
+
             setTimeout(() => {
-                window.location.reload()
-            }, 500);
-        }catch (e: any){
-            openSnackBar(e.message)
-        }finally {
-            closeLoader()
+                window.location.reload();
+            }, 700);
+        } catch (e: any) {
+            openSnackBar(e.message);
+        } finally {
+            closeLoader();
         }
     };
 
@@ -83,7 +86,7 @@ const EditProfileModal = ({ isOpen, onClose, userData }:EditProfileModalProps) =
             <div className={styles.Content}>
                 <h2>Edit Profile</h2>
                 <div className={styles.User}>
-                    <AvatarUploader avatar={avatar}/>
+                    <AvatarUploader avatar={avatar} alt={userData.nickname!}/>
                     <Input label={"Nickname"} value={editedData.nickname!} type={"text"} onChange={handleInputChange}/>
                     <Input label={"Username"} value={editedData.username!} type={"text"} onChange={handleInputChange}/>
                     <Textarea label={"Bio"} value={editedData.bio!} max={64} onChange={handleInputChange}/>
