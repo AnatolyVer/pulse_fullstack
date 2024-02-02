@@ -7,6 +7,7 @@ import ProfileBar from "@pages/Main/ProfileBar/ProfileBar.tsx";
 
 import styles from './styles.module.scss'
 import ChatField from "@pages/Main/ChatField/ChatField.tsx";
+import {RootState} from "@redux/store.ts";
 
 const Main = () => {
 
@@ -14,7 +15,7 @@ const Main = () => {
 
     const [isAuthed] = useState<boolean>(localStorage.getItem("id") !== null)
 
-    const user = useSelector((state: any)  => state.user)
+    const user = useSelector((state: RootState)  => state.user)
 
     useEffect(() => {
         if (!isAuthed) nav('/sign_in')
@@ -24,7 +25,7 @@ const Main = () => {
         <div className={styles.Content}>
             <ChatBar/>
             <ChatField/>
-            <ProfileBar user = {user}/>
+            <ProfileBar/>
         </div>
     );
 };

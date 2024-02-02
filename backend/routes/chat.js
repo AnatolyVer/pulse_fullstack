@@ -1,6 +1,6 @@
-const { Router } = require("express");
-const ChatController = require("../controllers/ChatController.js");
-const {validateTokens} = require("../middlewares");
+import { Router } from "express";
+import {ChatController} from "../controllers/ChatController.js"
+import {validateTokens} from "../middlewares/index.js"
 
 const chatRouter = Router()
 
@@ -12,4 +12,4 @@ chatRouter.post('/create', validateTokens, ChatController.createChat)
 chatRouter.get('/:chat_id', validateTokens, ChatController.getOne)
 
 
-module.exports = chatRouter
+export default chatRouter

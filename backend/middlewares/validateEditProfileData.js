@@ -1,6 +1,6 @@
-const { check, validationResult } = require('express-validator');
+import { check, validationResult } from 'express-validator';
 
-module.exports = validateEditProfileData = async (req, res, next) => {
+export const validateEditProfileData = async (req, res, next) => {
     try {
         await Promise.all([
             check('username').optional().isLength({ min: 3 }).withMessage('Username must be at least 3 characters')

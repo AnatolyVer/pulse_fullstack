@@ -1,23 +1,26 @@
-const path = require("path");
-const dotenv = require ("dotenv");
-const bcrypt = require ('bcrypt')
-const jwt = require ("jsonwebtoken");
-const {Storage} = require ('@google-cloud/storage')
+import path from "path";
+import { fileURLToPath } from "url"; // Import fileURLToPath
+import dotenv from "dotenv";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { Storage } from "@google-cloud/storage";
+import User from "../models/user.js";
+import { UserDto } from "../dto/userDto.js";
+import TokenService from "./tokenService.js";
 
-const User = require ('../models/user.js')
-const {userDto} = require ("../dto/userDto.js");
-const TokenService = require ("./tokenService.js");
+dotenv.config();
 
-dotenv.config()
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const credentialsPath = path.join(__dirname, process.env.PATH_TO_CLOUD_JSON);
 process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath;
 
-const storage = new Storage({ projectId: process.env.CLOUD_PROJECT_ID })
-const bucketName = process.env.GOOGLE_BUCKET_NAME
-const bucket = storage.bucket(bucketName)
+const storage = new Storage({ projectId: process.env.CLOUD_PROJECT_ID });
+const bucketName = process.env.GOOGLE_BUCKET_NAME;
+const bucket = storage.bucket(bucketName);
 
-module.exports =  class UserService {
+
+export default class UserService {
 
     //refactored
     static async createUser({username, nickname, password}) {
@@ -50,8 +53,9 @@ module.exports =  class UserService {
     static async getUser(id) {
         try{
             const user = await User.findById(id)
-            return new userDto(user)
+            return new UserDto(user)
         }catch (e) {
+            console.log(e)
             throw new Error(e.message)
         }
     }

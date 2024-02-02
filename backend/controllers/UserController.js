@@ -1,7 +1,7 @@
-const userService = require('../services/UserService.js')
-const jwt = require("jsonwebtoken");
+import userService from '../services/UserService.js'
+import jwt from "jsonwebtoken";
 
-module.exports = class UserController {
+export default class UserController {
 
     //refactored
     static async signUp(req, res) {

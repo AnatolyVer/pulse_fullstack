@@ -1,14 +1,14 @@
-const jwt = require("jsonwebtoken");
-const chatService = require("../services/ChatService.js");
-const {FullChat} = require("../dto/previewChat.js");
+import jwt from "jsonwebtoken";
+import ChatService from "../services/ChatService.js";
+import {FullChat} from "../dto/previewChat.js";
 
-module.exports = class ChatController {
+export class ChatController {
 
-    static async getAll(req, res) {
+    static async getAll(req, res){
         try {
             const {_id} = jwt.decode(req.headers['refresh-token'])
             const {substr} = req.query
-            const chats = await chatService.getAllPreviewChats(_id, substr)
+            const chats = await ChatService.getAllPreviewChats(_id, substr)
             res.status(200).json(chats)
         } catch (err) {
             console.error(err);
@@ -21,7 +21,7 @@ module.exports = class ChatController {
         try{
             const {_id} = jwt.decode(req.headers['refresh-token'])
             const {chat_id} = req.params
-            const chat = await chatService.getOne(_id, chat_id)
+            const chat = await ChatService.getOne(_id, chat_id)
             const fullChat = new FullChat(chat, _id)
             return res.status(200).json(fullChat)
         }catch (e) {
@@ -36,7 +36,7 @@ module.exports = class ChatController {
             const sender = jwt.decode(req.headers['refresh-token'])._id
             const message = req.body
             const chat_id = req.query._id
-            const result = await chatService.sendMessage(sender, chat_id, message)
+            const result = await ChatService.sendMessage(sender, chat_id, message)
             return res.status(200).json(result)
         }catch (e) {
             res.status(500).end(e.message)
@@ -48,7 +48,7 @@ module.exports = class ChatController {
         try{
             const users_id = req.body
             const {_id} = jwt.decode(req.headers['refresh-token'])
-            const chat = await chatService.create(_id, users_id)
+            const chat = await ChatService.create(_id, users_id)
             const fullChat = new FullChat(chat, _id)
             return res.status(200).json(fullChat)
         }catch (e) {

@@ -1,25 +1,16 @@
-const {CryptoService} = require("./cryptoService.js");
+import CryptoService from "./cryptoService.js"
 
-const User = require("../models/user.js");
-const Chat = require("../models/chat.js");
+import User from "../models/user.js"
+import Chat from "../models/chat.js"
 
-const chatDto = require("../dto/chatDto.js");
+import chatDto from "../dto/chatDto.js"
 
-const ws = require("../index.js")
-const {PreviewChat} = require("../dto/previewChat.js");
-const {PublicUserDto} = require("../dto/userDto.js");
+import WebSocket from "../index.js"
+import {PreviewChat} from "../dto/previewChat.js"
+import {PublicUserDto} from "../dto/userDto.js"
 
-module.exports = class ChatService{
 
-    static cutTheMessage (message){
-        if (message){
-            if (message.text.length > 30) message.text = message.text.substring(0, 30 - 3) + '...';
-            return message
-        }
-        else return {}
-    }
-
-    static unreadMessagesToString = (unreadMessages) => unreadMessages > 99 ? "+99" : unreadMessages
+export default class ChatService{
 
     static #createPreviewChat (chat, user_id, user) {
         switch (chat.type) {
@@ -105,7 +96,8 @@ module.exports = class ChatService{
 
                 for (const member_id of chat.members) {
                     if (member_id.toString() !== sender.toString()){
-                        ws.sendMessage(member_id, {body: {message, chat_id}, type:"NEW_MESSAGE"})
+                        console.log(WebSocket)
+                        WebSocket.sendMessage(member_id, {body: {message, chat_id}, type:"NEW_MESSAGE"})
                     }
                 }
 

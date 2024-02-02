@@ -23,7 +23,7 @@ class PublicUserDto {
     }
 }
 
-module.exports = {
+export {
     UserDto,
     PublicUserDto
 };

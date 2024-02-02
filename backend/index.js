@@ -1,13 +1,13 @@
-const express = require('express')
-const mongoose = require('mongoose')
-const cors = require('cors')
-const cookieParser = require('cookie-parser')
-const http = require('http')
-const dotenv = require('dotenv')
+import express from 'express'
+import mongoose from 'mongoose'
+import cors from 'cors'
+import cookieParser from 'cookie-parser'
+import http from 'http'
+import dotenv from 'dotenv'
 
-const WebSocketManager = require ('./WebSocket.js');
-const userRouter = require ("./routes/users.js");
-const chatRouter = require ("./routes/chat.js");
+import WebSocketManager from './WebSocket.js';
+import userRouter from  "./routes/users.js";
+import chatRouter from  "./routes/chat.js";
 
 /*-------------------------- SETTINGS -------------------------*/
 
@@ -48,7 +48,7 @@ app.get("/check", (req, res) => {
 
 /*-------------------------- RUNNING SERVER --------------------------*/
 
-module.exports = ws = new WebSocketManager(server);
+export default new WebSocketManager(server);
 
 try {
   server.listen(PORT, () => {
@@ -57,4 +57,5 @@ try {
 } catch (error) {
   console.error("An error occurred while starting the server:", error);
 }
+
 

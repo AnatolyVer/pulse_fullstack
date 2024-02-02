@@ -1,6 +1,16 @@
-const ChatService = require("../services/ChatService.js");
+function cutTheMessage (message){
+    if (message){
+        if (message.text.length > 30) message.text = message.text.substring(0, 30 - 3) + '...';
+        return message
+    }
+    else return {}
+}
 
-class PreviewChat{
+function unreadMessagesToString (unreadMessages){
+    return unreadMessages > 99 ? "+99" : unreadMessages
+}
+
+export class PreviewChat{
     _id
     type
     image
@@ -22,8 +32,8 @@ class PreviewChat{
             }
         }
         if (chat.messages){
-            this.last_message = ChatService.cutTheMessage(chat.messages[chat.messages.length - 1])
-            this.unread_messages = ChatService.unreadMessagesToString(chat.messages.length)
+            this.last_message = cutTheMessage(chat.messages[chat.messages.length - 1])
+            this.unread_messages = unreadMessagesToString(chat.messages.length)
         }
         else {
             this.last_message = undefined
@@ -32,7 +42,7 @@ class PreviewChat{
     }
 }
 
-class FullChat{
+export class FullChat{
     _id
     messages
     user
@@ -49,10 +59,7 @@ class FullChat{
             }
         }
 
-        this.unread_messages = ChatService.unreadMessagesToString(chat.messages.length)
+        this.unread_messages = unreadMessagesToString(chat.messages.length)
     }
 }
 
-module.exports = {
-    PreviewChat, FullChat
-}
