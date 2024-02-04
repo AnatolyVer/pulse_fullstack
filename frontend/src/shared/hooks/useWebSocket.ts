@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {changeLastMessage} from "@redux/chatListSlice.ts";
 import {RootState} from "@redux/store.ts";
-import {addMessage as addMessageToCurrentChat} from "@redux/chatSlice.ts";
+import {addMessage} from "@redux/chatSlice.ts";
 
 interface WSPayload {
     body:any
@@ -24,8 +24,7 @@ const useWebSocket = () => {
                 case "NEW_MESSAGE":
                     dispatch(changeLastMessage({chat_id:payload.body.chat_id, message: payload.body.message}))
                     if (chat._id === payload.body.chat_id) {
-                        console.log("true")
-                        dispatch(addMessageToCurrentChat(payload.body.message))
+                        dispatch(addMessage(payload.body.message))
                     }
                     break;
             }

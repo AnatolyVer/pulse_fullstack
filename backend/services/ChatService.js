@@ -103,7 +103,6 @@ export default class ChatService{
 
                 for (const member_id of chat.members) {
                     if (member_id.toString() !== sender.toString()){
-                        console.log(WebSocket)
                         WebSocket.sendMessage(member_id, {body: {message, chat_id}, type:"NEW_MESSAGE"})
                     }
                 }
