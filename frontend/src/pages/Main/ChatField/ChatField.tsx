@@ -31,8 +31,6 @@ const ChatField = () => {
     const [openSnackBar,] = useSnackBar()
     const [protectedAxiosRequest,] = useProtectedAxios()
 
-    console.log(chat)
-
     const onSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         try {
@@ -53,7 +51,7 @@ const ChatField = () => {
                     await protectedAxiosRequest(() => sendMessage(messageToSend, res!.data._id!))
                 }
                 messageToSend.delivered = true
-                dispatch(addMessageToCurrentChat(messageToSend))
+                dispatch(addMessageToCurrentChat({chat_id:chat._id, message:messageToSend}))
                 dispatch(changeLastMessage({chat_id: chat._id, message: messageToSend}))
                 setMessage("")
             }
