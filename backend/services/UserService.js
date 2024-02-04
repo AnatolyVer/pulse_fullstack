@@ -122,6 +122,7 @@ export default class UserService {
             return await this.getAvatar(gcsFile);
         } catch (e) {
             console.log(e)
+
             throw new Error(e.message);
         }
     }
