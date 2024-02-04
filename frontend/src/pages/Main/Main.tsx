@@ -4,10 +4,10 @@ import {useNavigate} from "react-router-dom";
 
 import ChatBar from "@pages/Main/ChatBar/ChatBar.tsx";
 import ProfileBar from "@pages/Main/ProfileBar/ProfileBar.tsx";
-
-import styles from './styles.module.scss'
 import ChatField from "@pages/Main/ChatField/ChatField.tsx";
 import {RootState} from "@redux/store.ts";
+
+import styles from './styles.module.scss'
 
 const Main = () => {
 

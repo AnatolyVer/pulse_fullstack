@@ -30,10 +30,11 @@ const EditProfileModal = ({ isOpen, onClose, userData }:EditProfileModalProps) =
     const [openLoader, closeLoader] = useLoader()
     const [protectedAxiosRequest,] = useProtectedAxios()
 
-    const avatar:IAvatarHook = useAvatarUploading(userData.avatar_url)
+    const avatar:IAvatarHook = useAvatarUploading()
 
     useEffect(() => {
         setEditedData(userData)
+        avatar.initialize(userData.avatar_url!)
     }, [userData]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

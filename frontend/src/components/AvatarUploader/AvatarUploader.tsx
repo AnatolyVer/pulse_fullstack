@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import CropModal from '@components/CropModal/CropModal';
 import EditIcon from '@mui/icons-material/Edit';
@@ -19,10 +19,6 @@ function AvatarUploader ({avatar, alt}:AvatarUploaderProps){
     const [crop, setCrop] = useState<Crop>()
 
     const [openLoader,] = useLoader()
-
-    useEffect(() => {
-        console.log(avatar)
-    }, []);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const reader = new FileReader();

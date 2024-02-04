@@ -11,4 +11,5 @@ export interface IAvatarHook{
     setDefaultImage: () => void;
     cancelEditing: () => void;
     confirmEditing: (file: File, photo: string) => void;
+    initialize: (image: string) => void
 }
