@@ -22,6 +22,7 @@ const useWebSocket = () => {
             const payload:WSPayload = JSON.parse(event.data)
             switch (payload.type) {
                 case "NEW_MESSAGE":
+                    console.log(chat)
                     console.log(chat._id + " " + payload.body.chat_id)
                     if (chat._id === payload.body.chat_id) {
                         dispatch(addMessage(payload.body.message))
