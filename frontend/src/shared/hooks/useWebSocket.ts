@@ -16,7 +16,7 @@ const useWebSocket = () => {
     const [socket, setSocket] = useState<WebSocket | undefined>();
 
     const connect = (id: string) => {
-        const newSocket = new WebSocket(`ws://localhost:3000?id=${id}`);
+        const newSocket = new WebSocket(`${import.meta.env.VITE_RESTAPI_WS_URL}?id=${id}`);
 
         newSocket.onmessage = (event) => {
             const payload:WSPayload = JSON.parse(event.data)
