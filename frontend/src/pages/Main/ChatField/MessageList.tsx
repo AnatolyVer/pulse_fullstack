@@ -11,7 +11,7 @@ const MessageList = ({ messages }: { messages: Array<TMessage> }) => {
         if (messagesContainerRef.current) {
             messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
         }
-    }, []);
+    }, [messages.length]);
 
     return (
         <div className={styles.MessageField}>

@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {changeLastMessage} from "@redux/chatListSlice.ts";
-import {RootState} from "@redux/store.ts";
 import {addMessage} from "@redux/chatSlice.ts";
 
 interface WSPayload {
@@ -12,7 +11,6 @@ interface WSPayload {
 const useWebSocket = () => {
 
     const dispatch = useDispatch()
-    const chat = useSelector((state: RootState) => state.chat);
     const [socket, setSocket] = useState<WebSocket | undefined>();
 
     const connect = (id: string) => {
@@ -22,7 +20,6 @@ const useWebSocket = () => {
             const payload:WSPayload = JSON.parse(event.data)
             switch (payload.type) {
                 case "NEW_MESSAGE":
-                    console.log(chat._id + " " + payload.body.chat_id)
                     dispatch(addMessage(payload.body))
                     dispatch(changeLastMessage({chat_id:payload.body.chat_id, message: payload.body.message}))
                     break;
