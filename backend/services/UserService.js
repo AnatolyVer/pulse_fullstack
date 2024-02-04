@@ -121,6 +121,7 @@ export default class UserService {
             stream.end(avatar.buffer);
             return await this.getAvatar(gcsFile);
         } catch (e) {
+            console.log(e)
             throw new Error(e.message);
         }
     }
