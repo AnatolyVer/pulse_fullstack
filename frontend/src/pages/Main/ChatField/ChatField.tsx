@@ -31,6 +31,8 @@ const ChatField = () => {
     const [openSnackBar,] = useSnackBar()
     const [protectedAxiosRequest,] = useProtectedAxios()
 
+    console.log(chat)
+
     const onSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         try {
